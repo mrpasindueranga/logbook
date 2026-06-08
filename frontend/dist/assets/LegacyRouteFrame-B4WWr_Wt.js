@@ -1,0 +1,1 @@
+import{u as e,r as t,j as o}from"./index-D8GOcyQZ.js";import m from"./LegacyAppFrame-CLk9XOb0.js";function u(){const a=e()["*"]||"",s=t.useMemo(()=>{const r=a.replace(/^\/+/,"");return r?`#/${r}`:"#/"},[a]);return o.jsx(m,{hashPath:s})}export{u as default};

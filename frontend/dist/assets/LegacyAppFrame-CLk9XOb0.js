@@ -1,0 +1,1 @@
+import{j as a}from"./index-D8GOcyQZ.js";function t({hashPath:e="#/"}){const s=(window.__BASE_PATH__||"").replace(/\/+$/,""),r=e.startsWith("#")?e:"#/";return a.jsx("div",{className:"legacy-frame-wrap",children:a.jsx("iframe",{className:"legacy-frame",src:`${s}/legacy${r}`,title:"Logbook Legacy App"})})}export{t as default};

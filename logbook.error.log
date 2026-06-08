@@ -1,0 +1,1996 @@
+(node:30828) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82171) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:77305) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44192) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33628) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47588) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49289) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:50931) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65445) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:93824) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16244) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17500) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:86446) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:89840) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+error: column "s.position" must appear in the GROUP BY clause or be used in an aggregate function
+    at /Users/pasindu/runners/logbook/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.q (/Users/pasindu/runners/logbook/database/db.js:13:15)
+    at async /Users/pasindu/runners/logbook/routes/organizations.js:33:20
+(node:94622) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30421) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31176) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:33216) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:33725) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:35473) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:36484) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:38112) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:39504) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:40176) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:41296) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:45490) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:50388) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:51890) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:52424) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:53047) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:53713) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:54298) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:54966) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:57160) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:57665) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:58074) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:58599) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:59095) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:60935) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:61738) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:62234) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:62755) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:63244) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:63758) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:64255) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:64893) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:65923) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:67108) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:69948) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:70931) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:77:11) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:72041) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:72860) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:73789) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:_http_outgoing:652
+    throw new ERR_HTTP_HEADERS_SENT('set');
+    ^
+
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.<anonymous> (/Users/pasindu/runners/logbook/src/middlewares/requestMeta.js:13:20)
+    at ServerResponse.emit (node:events:526:35)
+    at onFinish (node:_http_outgoing:1005:10)
+    at callback (node:internal/streams/writable:748:21)
+    at afterWrite (node:internal/streams/writable:693:5)
+    at afterWriteTick (node:internal/streams/writable:679:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:81:21) {
+  code: 'ERR_HTTP_HEADERS_SENT'
+}
+
+Node.js v20.10.0
+(node:74665) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:77977) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:78842) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:79338) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:80170) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:80690) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:81210) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85559) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:86137) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:86635) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:87158) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:87655) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:88173) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:88663) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:89641) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:90148) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:90666) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:91344) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:91935) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:92439) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:92948) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:93490) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:94032) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:94534) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:95514) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:96045) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:96565) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:97085) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:97624) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:98166) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:98675) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:events:492
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::3737
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (/Users/pasindu/runners/logbook/node_modules/express/lib/application.js:635:24)
+    at /Users/pasindu/runners/logbook/server.js:14:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1899:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3737
+}
+
+Node.js v20.10.0
+(node:99207) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:75079) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+versions published after the first week of January 2027
+will require node >=22. You are running node v20.10.0.
+
+To continue receiving updates to AWS services, bug fixes,
+and security updates please upgrade to node >=22.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logbook</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="__ASSET_BASE_PATH__/favicon.svg"
+    />
+    <link rel="stylesheet" href="__ASSET_BASE_PATH__/css/style.css" />
+    <script>
+      window.__BASE_PATH__ = __BASE_PATH_JSON__;
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- ── Sidebar ── -->
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            <span>Logbook</span>
+          </div>
+          <button
+            class="sidebar-toggle-btn"
+            onclick="toggleSidebar()"
+            title="Hide sidebar"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="#/" class="nav-item" id="nav-dashboard">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="#/reminders" class="nav-item" id="nav-reminders">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            Reminders
+            <span id="nav-reminders-badge" class="nav-badge hidden"></span>
+          </a>
+          <div
+            class="search-box"
+            onclick="openTelescope()"
+            style="cursor: pointer"
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span style="flex: 1; font-size: 12.5px; color: var(--text-dim)"
+              >Search notes…</span
+            >
+            <kbd>⌘K</kbd>
+          </div>
+        </nav>
+
+        <!-- Workspace (org) switcher – rendered by JS -->
+        <div id="sb-workspace-area"></div>
+
+        <div class="sidebar-section">
+          <div id="sidebar-org-list"></div>
+        </div>
+
+        <!-- ── Sidebar bottom ── -->
+        <div class="sidebar-bottom">
+          <a href="#/settings" class="sidebar-bottom-link" id="nav-settings">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            Settings
+          </a>
+        </div>
+      </aside>
+
+      <!-- ── Main ── -->
+      <main id="main">
+        <div id="content"></div>
+      </main>
+    </div>
+
+    <!-- Floating sidebar re-open button (visible only when sidebar is hidden) -->
+    <button
+      id="sidebar-open-btn"
+      onclick="toggleSidebar()"
+      title="Show sidebar"
+    >
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+      >
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </button>
+
+    <!-- AI Panel -->
+    <button class="ai-toggle" id="ai-toggle-btn" onclick="toggleAIPanel()">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+        <path d="M2 17l10 5 10-5" />
+        <path d="M2 12l10 5 10-5" />
+      </svg>
+      Ask AI
+    </button>
+
+    <div id="ai-panel" class="ai-panel">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+          Ask your Logbook
+        </div>
+        <button class="ai-close-btn" onclick="toggleAIPanel()">✕</button>
+      </div>
+      <div class="ai-messages" id="ai-messages">
+        <div class="ai-welcome">
+          <div class="ai-welcome-icon">✨</div>
+          <h4>Ask anything about your notes</h4>
+          <p>
+            I'll search your logbook and answer with context. Works better with
+            AI configured in Settings.
+          </p>
+          <div class="ai-example-queries">
+            <div class="ai-example-q" onclick="fillAIQuery(this)">
+              How do I set up nginx reverse proxy?
+            </div>
+            <div class="ai-example-q" onclick="fillAIQuery(this)">
+              What did I note about authentication?
+            </div>
+            <div class="ai-example-q" onclick="fillAIQuery(this)">
+              Show me my database setup notes
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ai-input-area">
+        <input
+          type="text"
+          class="ai-input"
+          id="ai-input"
+          placeholder="Ask anything…"
+          onkeydown="if (event.key === 'Enter') sendAIMessage();"
+        />
+        <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Telescope (Cmd+K search) -->
+    <div
+      id="telescope"
+      class="telescope hidden"
+      onmousedown="handleTeleBackdrop(event)"
+    >
+      <div class="telescope-modal">
+        <div class="telescope-header">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="color: var(--text-dim); flex-shrink: 0"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            class="telescope-input"
+            id="telescope-input"
+            placeholder="Search notes…"
+            oninput="onTelescopeInput()"
+            onkeydown="onTelescopeKey(event)"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <kbd class="telescope-esc">Esc</kbd>
+        </div>
+        <div class="telescope-filters" id="telescope-filters"></div>
+        <div class="telescope-results" id="telescope-results">
+          <div class="tele-empty">Type to search your notes</div>
+        </div>
+        <div class="telescope-footer">
+          <span class="tele-hint"><kbd>↑↓</kbd> Navigate</span>
+          <span class="tele-hint"><kbd>↵</kbd> Open</span>
+          <span class="tele-hint"><kbd>Esc</kbd> Close</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <!-- Modal overlay -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div id="modal" class="modal">
+        <div id="modal-content"></div>
+      </div>
+    </div>
+
+    <!-- marked + DOMPurify from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="__ASSET_BASE_PATH__/js/app.js"></script>
+  </body>
+</html>
