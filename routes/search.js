@@ -27,7 +27,7 @@ router.get("/", async (req, res, next) => {
 
     const rows = await db.q(`
       SELECT n.id, n.title, n.type, n.tags, n.updated_at,
-        LEFT(n.content, 200) AS excerpt,
+        CASE WHEN n.type = 'sketch' THEN NULL ELSE LEFT(n.content, 200) END AS excerpt,
         p.id AS project_id, p.name AS project_name,
         o.id AS org_id,     o.name AS org_name, o.color AS org_color
       FROM notes n

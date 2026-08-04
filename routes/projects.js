@@ -173,7 +173,7 @@ router.post("/:id/story", async (req, res, next) => {
 router.get("/:id/story/:pageId", async (req, res, next) => {
   try {
     const row = await db.one(
-      `SELECT id, title, content, updated_at FROM notes
+      `SELECT id, title, content, handwritten, updated_at FROM notes
        WHERE id = $1 AND project_id = $2 AND type = 'story'`,
       [req.params.pageId, req.params.id],
     );
@@ -192,7 +192,7 @@ router.put("/:id/story/:pageId", async (req, res, next) => {
       [req.params.pageId, req.params.id],
     );
     if (!page) return res.status(404).json({ error: "Page not found" });
-    const { title, content } = req.body;
+    const { title, content, handwritten } = req.body;
     const sets = [];
     const vals = [];
     let i = 1;
@@ -203,6 +203,10 @@ router.put("/:id/story/:pageId", async (req, res, next) => {
     if (content !== undefined) {
       sets.push(`content = $${i++}`);
       vals.push(content);
+    }
+    if (handwritten !== undefined) {
+      sets.push(`handwritten = $${i++}`);
+      vals.push(!!handwritten);
     }
     if (sets.length) {
       sets.push("updated_at = NOW()");

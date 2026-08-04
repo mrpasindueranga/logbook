@@ -105,6 +105,8 @@ router.post("/", async (req, res, next) => {
       title,
       priority = "medium",
       due_date = null,
+      description = "",
+      handwritten = false,
     } = req.body;
     if (!project_id)
       return res.status(400).json({ error: "project_id is required" });
@@ -123,13 +125,15 @@ router.post("/", async (req, res, next) => {
     );
 
     const todo = await db.one(
-      "INSERT INTO todos (project_id, title, priority, due_date, position) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+      "INSERT INTO todos (project_id, title, priority, due_date, position, description, handwritten) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *",
       [
         project_id,
         title.trim(),
         priority,
         due_date || null,
         Number(maxpos) + 1,
+        description,
+        !!handwritten,
       ],
     );
     log({
@@ -168,6 +172,14 @@ router.put("/:id", async (req, res, next) => {
     const due_date =
       req.body.due_date !== undefined ? req.body.due_date : todo.due_date;
     const position = req.body.position ?? todo.position;
+    const description =
+      req.body.description !== undefined
+        ? req.body.description
+        : todo.description || "";
+    const handwritten =
+      req.body.handwritten !== undefined
+        ? !!req.body.handwritten
+        : todo.handwritten;
 
     const validStatus = ["todo", "in_progress", "done"].includes(status)
       ? status
@@ -177,14 +189,16 @@ router.put("/:id", async (req, res, next) => {
       : todo.priority;
 
     const updated = await db.one(
-      `UPDATE todos SET title=$1, status=$2, priority=$3, due_date=$4, position=$5, updated_at=NOW()
-       WHERE id=$6 RETURNING *`,
+      `UPDATE todos SET title=$1, status=$2, priority=$3, due_date=$4, position=$5, description=$6, handwritten=$7, updated_at=NOW()
+       WHERE id=$8 RETURNING *`,
       [
         title,
         validStatus,
         validPriority,
         due_date || null,
         position,
+        description,
+        handwritten,
         req.params.id,
       ],
     );

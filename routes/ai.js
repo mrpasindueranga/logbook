@@ -294,6 +294,10 @@ router.post("/summarize/:noteId", async (req, res, next) => {
       req.params.noteId,
     ]);
     if (!note) return res.status(404).json({ error: "Note not found" });
+    if (note.type === "sketch")
+      return res
+        .status(400)
+        .json({ error: "AI features aren't available for sketch notes yet" });
     const settings = await getSettings();
     if (!settings.ai_provider)
       return res.status(400).json({ error: "AI not configured" });
@@ -318,6 +322,10 @@ router.post("/suggest-tags/:noteId", async (req, res, next) => {
       req.params.noteId,
     ]);
     if (!note) return res.status(404).json({ error: "Note not found" });
+    if (note.type === "sketch")
+      return res
+        .status(400)
+        .json({ error: "AI features aren't available for sketch notes yet" });
     const settings = await getSettings();
     if (!settings.ai_provider)
       return res.status(400).json({ error: "AI not configured" });
@@ -351,7 +359,7 @@ router.post("/suggest-ideas/:projectId", async (req, res, next) => {
       return res.status(400).json({ error: "AI not configured" });
 
     const recentNotes = await db.q(
-      "SELECT title, LEFT(content,400) AS content FROM notes WHERE project_id=$1 ORDER BY updated_at DESC LIMIT 5",
+      "SELECT title, LEFT(content,400) AS content FROM notes WHERE project_id=$1 AND type != 'sketch' ORDER BY updated_at DESC LIMIT 5",
       [proj.id],
     );
     const context = recentNotes

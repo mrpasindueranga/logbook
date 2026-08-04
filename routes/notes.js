@@ -32,7 +32,7 @@ router.get("/", async (req, res, next) => {
       return res.status(400).json({ error: "project_id is required" });
 
     let sql = `SELECT id, title, tags, pinned, type, created_at, updated_at,
-                 LEFT(content, 300) AS excerpt
+                 CASE WHEN type = 'sketch' THEN NULL ELSE LEFT(content, 300) END AS excerpt
                FROM notes WHERE project_id = $1`;
     const params = [project_id];
 
@@ -85,13 +85,14 @@ router.post("/", async (req, res, next) => {
       tags = "[]",
       pinned = 0,
       type = "descriptive",
+      handwritten = false,
     } = req.body;
     if (!project_id)
       return res.status(400).json({ error: "project_id is required" });
     if (!(await db.one("SELECT id FROM projects WHERE id = $1", [project_id])))
       return res.status(404).json({ error: "Project not found" });
 
-    const noteType = ["quick", "descriptive"].includes(type)
+    const noteType = ["quick", "descriptive", "sketch"].includes(type)
       ? type
       : "descriptive";
     let resolvedTitle = title.trim();
@@ -99,13 +100,23 @@ router.post("/", async (req, res, next) => {
       resolvedTitle =
         noteType === "quick" && content.trim()
           ? content.trim().split("\n")[0].slice(0, 60).trim() || "Quick note"
-          : "Untitled";
+          : noteType === "sketch"
+            ? "Untitled sketch"
+            : "Untitled";
     }
     const tagsJson = typeof tags === "string" ? tags : JSON.stringify(tags);
 
     const created = await db.one(
-      "INSERT INTO notes (project_id, title, content, tags, pinned, type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
-      [project_id, resolvedTitle, content, tagsJson, pinned ? 1 : 0, noteType],
+      "INSERT INTO notes (project_id, title, content, tags, pinned, type, handwritten) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *",
+      [
+        project_id,
+        resolvedTitle,
+        content,
+        tagsJson,
+        pinned ? 1 : 0,
+        noteType,
+        !!handwritten,
+      ],
     );
     const proj = await db.one("SELECT org_id FROM projects WHERE id = $1", [
       project_id,
@@ -144,14 +155,18 @@ router.put("/:id", async (req, res, next) => {
     const tagsJson =
       typeof rawTags === "string" ? rawTags : JSON.stringify(rawTags);
     const rawType = req.body.type !== undefined ? req.body.type : note.type;
-    const noteType = ["quick", "descriptive"].includes(rawType)
+    const noteType = ["quick", "descriptive", "sketch"].includes(rawType)
       ? rawType
       : "descriptive";
+    const handwritten =
+      req.body.handwritten !== undefined
+        ? !!req.body.handwritten
+        : note.handwritten;
 
     const updated = await db.one(
-      `UPDATE notes SET title=$1, content=$2, tags=$3, pinned=$4, type=$5, updated_at=NOW()
-       WHERE id=$6 RETURNING *`,
-      [title, content, tagsJson, pinned, noteType, req.params.id],
+      `UPDATE notes SET title=$1, content=$2, tags=$3, pinned=$4, type=$5, handwritten=$6, updated_at=NOW()
+       WHERE id=$7 RETURNING *`,
+      [title, content, tagsJson, pinned, noteType, handwritten, req.params.id],
     );
     const proj = await db.one("SELECT org_id FROM projects WHERE id = $1", [
       note.project_id,

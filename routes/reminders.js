@@ -64,6 +64,7 @@ router.post("/", async (req, res, next) => {
       project_id = null,
       entity_type = "standalone",
       entity_id = null,
+      handwritten = false,
     } = req.body;
 
     if (!title?.trim())
@@ -72,8 +73,8 @@ router.post("/", async (req, res, next) => {
       return res.status(400).json({ error: "remind_at is required" });
 
     const r = await db.one(
-      `INSERT INTO reminders (title, note, remind_at, project_id, entity_type, entity_id)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      `INSERT INTO reminders (title, note, remind_at, project_id, entity_type, entity_id, handwritten)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       [
         title.trim(),
         note,
@@ -81,6 +82,7 @@ router.post("/", async (req, res, next) => {
         project_id || null,
         entity_type,
         entity_id || null,
+        !!handwritten,
       ],
     );
     res.status(201).json(r);
@@ -116,12 +118,24 @@ router.put("/:id", async (req, res, next) => {
           ? 1
           : 0
         : existing.is_done;
+    const handwritten =
+      req.body.handwritten !== undefined
+        ? !!req.body.handwritten
+        : existing.handwritten;
 
     const updated = await db.one(
       `UPDATE reminders
-       SET title=$1, note=$2, remind_at=$3, is_done=$4, project_id=$5, updated_at=NOW()
-       WHERE id=$6 RETURNING *`,
-      [title, note, remind_at, is_done, project_id || null, req.params.id],
+       SET title=$1, note=$2, remind_at=$3, is_done=$4, project_id=$5, handwritten=$6, updated_at=NOW()
+       WHERE id=$7 RETURNING *`,
+      [
+        title,
+        note,
+        remind_at,
+        is_done,
+        project_id || null,
+        handwritten,
+        req.params.id,
+      ],
     );
     res.json(updated);
   } catch (e) {

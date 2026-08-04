@@ -198,6 +198,29 @@ async function init() {
     WHERE p.section_id IS NULL;
   `);
 
+  // ── Rich-text description for todos and ideas ────────────────────────────
+  await pool.query(`
+    ALTER TABLE todos ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+    ALTER TABLE ideas ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+  `);
+
+  // ── Handwritten style toggle + inline embedded sketches ──────────────────
+  await pool.query(`
+    ALTER TABLE notes     ADD COLUMN IF NOT EXISTS handwritten BOOLEAN NOT NULL DEFAULT false;
+    ALTER TABLE todos     ADD COLUMN IF NOT EXISTS handwritten BOOLEAN NOT NULL DEFAULT false;
+    ALTER TABLE reminders ADD COLUMN IF NOT EXISTS handwritten BOOLEAN NOT NULL DEFAULT false;
+
+    CREATE TABLE IF NOT EXISTS content_sketches (
+      id          SERIAL PRIMARY KEY,
+      entity_type TEXT    NOT NULL,
+      entity_id   INTEGER NOT NULL,
+      elements    TEXT    NOT NULL DEFAULT '{"elements":[]}',
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_content_sketches_entity ON content_sketches(entity_type, entity_id);
+  `);
+
   console.log("✓  PostgreSQL schema ready");
 }
 

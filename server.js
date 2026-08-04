@@ -23,6 +23,7 @@ app.use(`${BASE_PATH}/api/search`, require("./routes/search"));
 app.use(`${BASE_PATH}/api/labels`, require("./routes/labels"));
 app.use(`${BASE_PATH}/api/ideas`, require("./routes/ideas"));
 app.use(`${BASE_PATH}/api/attachments`, require("./routes/attachments"));
+app.use(`${BASE_PATH}/api/sketches`, require("./routes/sketches"));
 app.use(`${BASE_PATH}/api/reminders`, require("./routes/reminders"));
 app.use(`${BASE_PATH}/api/calendar`, require("./routes/calendar"));
 app.use(`${BASE_PATH}/api/transfer`, require("./routes/transfer"));

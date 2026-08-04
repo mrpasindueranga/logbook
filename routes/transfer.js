@@ -254,7 +254,11 @@ router.get("/note/:id/markdown", async (req, res, next) => {
       "",
     );
 
-    const md = frontLines.join("\n") + note.content;
+    const body =
+      note.type === "sketch"
+        ? "_Hand-drawn sketch note — open in Logbook to view._"
+        : note.content;
+    const md = frontLines.join("\n") + body;
     const slug = note.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")

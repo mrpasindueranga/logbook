@@ -1,0 +1,23 @@
+services:
+  app:
+    image: ${IMAGE_NAME:-local-logbook-app}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logbook-app
+    hostname: logbook-app
+    restart: unless-stopped
+    ports:
+      - "3737:3737"
+    environment:
+      PORT: 3737
+      PG_HOST: host.docker.internal
+      PG_PORT: 5432
+      PG_DB: logbook
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      MINIO_ENDPOINT: http://host.docker.internal:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: logbook
+      MINIO_PUBLIC_URL: http://host.docker.internal:9000

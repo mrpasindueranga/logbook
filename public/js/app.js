@@ -100,6 +100,9 @@ const S = {
   editorView: "split",
   autosaveTimer: null,
   isDirty: false,
+  sketchBoard: null, // active createSketchBoard() instance, if any
+  sketchDraftContent: null, // serialized sketch JSON kept in memory while toggling note type
+  sketchViewBoard: null, // read-only createSketchBoard() instance on the note view page
 };
 
 let dashProjects = []; // cached for dashboard org-switcher filtering
@@ -210,7 +213,7 @@ function md(content) {
     typeof DOMPurify !== "undefined" &&
     typeof DOMPurify.sanitize === "function"
   ) {
-    return DOMPurify.sanitize(raw, { ADD_ATTR: ["target"] });
+    return DOMPurify.sanitize(raw, { ADD_ATTR: ["target", "style"] });
   }
   return raw;
 }
@@ -1032,6 +1035,7 @@ async function viewOrg(id) {
   const totalNotes = org.projects.reduce((s, p) => s + (+p.note_count || 0), 0);
 
   el.innerHTML = `
+    <div class="page-in">
     <div class="page-header">
       <div class="page-header-left">
         <div class="breadcrumb">
@@ -1101,13 +1105,18 @@ async function viewOrg(id) {
       <button class="btn btn-primary" onclick="openNewProjectModal(${id})">+ New Project</button>
     </div>`
     }
+    </div>
   `;
 }
 
 // ─── Project view ─────────────────────────────────────────────────────────────
 async function viewProject(id, tab = "story") {
   const el = document.getElementById("content");
-  el.innerHTML = loading();
+  // Switching tabs within the project we're already viewing shouldn't blank
+  // the page to a spinner — keep the current content up while the fresh
+  // data loads, then fade the new content in once it's ready.
+  const isTabSwitch = el.dataset.projectId === String(id);
+  if (!isTabSwitch) el.innerHTML = loading();
   const proj = await get(`/projects/${id}`);
 
   S.activeSidebarOrg = proj.org_id;
@@ -1138,7 +1147,9 @@ async function viewProject(id, tab = "story") {
     todoCount = todosResult.filter((t) => t.status !== "done").length;
   } catch (_) {}
 
+  el.dataset.projectId = String(proj.id);
   el.innerHTML = `
+    <div class="page-in">
     <div class="page-header">
       <div class="page-header-left">
         <div class="breadcrumb">
@@ -1179,7 +1190,8 @@ async function viewProject(id, tab = "story") {
       </a>
     </div>
 
-    <div id="tab-content" class="page-in"></div>
+    <div id="tab-content"></div>
+    </div>
   `;
 
   if (tab === "story") await renderStoryTab(id, proj);
@@ -1332,14 +1344,16 @@ function _renderStoryPageView() {
     </div>`;
 
   const el = document.getElementById("story-rendered");
+  el.classList.toggle("handwritten-text", !!page.handwritten);
   if (page.content?.trim()) {
-    const raw = marked.parse(page.content);
+    const raw = renderRichContent(page.content);
     const withIds = raw.replace(
       /<h([1-3])>(.*?)<\/h\1>/g,
       (_, l, inner) =>
         `<h${l} id="${_storySlug(inner.replace(/<[^>]+>/g, ""))}">${inner}</h${l}>`,
     );
-    el.innerHTML = DOMPurify.sanitize(withIds, { ADD_ATTR: ["id"] });
+    el.innerHTML = withIds;
+    hydrateRichEmbeds(el);
   } else {
     el.innerHTML = `<p class="story-placeholder">Click <strong>Edit</strong> to start writing this page…</p>`;
   }
@@ -1355,6 +1369,17 @@ function storyStartEdit() {
   const area = document.getElementById("story-page-area");
   if (!area || !_storyCurrentPage) return;
   const page = _storyCurrentPage;
+
+  registerRichSurface("story-editor", {
+    textareaId: "story-editor",
+    entityType: "story",
+    getEntityId: () => _storyCurrentPage?.id ?? null,
+    handwritten: page.handwritten,
+    onChange: () => {
+      storyUpdatePreview();
+      autoGrow(document.getElementById("story-editor"));
+    },
+  });
 
   area.innerHTML = `
     <div class="story-editor-wrap">
@@ -1382,12 +1407,22 @@ function storyStartEdit() {
                 onclick="document.getElementById('story-img-input').click()">📷 Image</button>
         <input type="file" id="story-img-input" accept="image/*" style="display:none"
                onchange="storyUploadImage(this)">
+        <div class="story-tb-sep"></div>
+        ${richToolbarHtml("story-editor", { full: false })}
+        <div style="margin-left:auto;display:flex;gap:4px">
+          <button class="story-tb-btn story-view-toggle active" id="story-write-btn"
+            onclick="storySetEditorView('write')" title="Write Markdown">Write</button>
+          <button class="story-tb-btn story-view-toggle" id="story-preview-btn"
+            onclick="storySetEditorView('preview')" title="Preview rendered">Preview</button>
+        </div>
       </div>
       <textarea id="story-editor" class="story-editor"
         placeholder="Write in Markdown… paste or drop images to embed them."
+        oninput="autoGrow(this);storyUpdatePreview()"
         onpaste="storyHandlePaste(event)"
         ondragover="event.preventDefault()"
         ondrop="storyHandleDrop(event)"></textarea>
+      <div id="story-editor-preview" class="story-editor-preview hidden"></div>
       <div class="story-editor-actions">
         <button class="btn btn-primary btn-sm"   onclick="storySavePage()">Save</button>
         <button class="btn btn-secondary btn-sm" onclick="_renderStoryPageView()">Cancel</button>
@@ -1395,7 +1430,45 @@ function storyStartEdit() {
     </div>`;
 
   document.getElementById("story-editor").value = page.content || "";
+  // Auto-size the textarea to its content on load
+  setTimeout(() => {
+    const ta = document.getElementById("story-editor");
+    if (ta) autoGrow(ta);
+  }, 0);
   document.getElementById("story-title-input").focus();
+}
+
+function storySetEditorView(view) {
+  const ta = document.getElementById("story-editor");
+  const preview = document.getElementById("story-editor-preview");
+  const writBtn = document.getElementById("story-write-btn");
+  const prevBtn = document.getElementById("story-preview-btn");
+  if (!ta || !preview) return;
+  if (view === "preview") {
+    preview.innerHTML = renderRichContent(ta.value);
+    preview.classList.toggle("handwritten-text", isRichHandwritten("story-editor"));
+    hydrateRichEmbeds(preview);
+    ta.classList.add("hidden");
+    preview.classList.remove("hidden");
+    writBtn?.classList.remove("active");
+    prevBtn?.classList.add("active");
+  } else {
+    ta.classList.remove("hidden");
+    preview.classList.add("hidden");
+    writBtn?.classList.add("active");
+    prevBtn?.classList.remove("active");
+    ta.focus();
+  }
+}
+
+function storyUpdatePreview() {
+  const preview = document.getElementById("story-editor-preview");
+  if (!preview || preview.classList.contains("hidden")) return;
+  const ta = document.getElementById("story-editor");
+  if (!ta) return;
+  preview.innerHTML = renderRichContent(ta.value);
+  preview.classList.toggle("handwritten-text", isRichHandwritten("story-editor"));
+  hydrateRichEmbeds(preview);
 }
 
 // ── Toolbar actions ───────────────────────────────────────────────────────────
@@ -1544,14 +1617,17 @@ async function storySavePage() {
   if (!titleEl || !editorEl || !_storyCurrentPage) return;
   const title = titleEl.value.trim() || "Untitled";
   const content = editorEl.value;
+  const handwritten = isRichHandwritten("story-editor");
   await put(`/projects/${_storyProjId}/story/${_storyCurrentPage.id}`, {
     title,
     content,
+    handwritten,
   });
   _storyCurrentPage = {
     ..._storyCurrentPage,
     title,
     content,
+    handwritten,
     updated_at: new Date().toISOString(),
   };
   const pg = _storyPages.find((p) => p.id === _storyCurrentPage.id);
@@ -1607,12 +1683,14 @@ function renderNotesTab(proj) {
   const el = document.getElementById("tab-content");
   const pinnedCount = _tabNotes.filter((n) => n.pinned).length;
   const quickCount = _tabNotes.filter((n) => n.type === "quick").length;
+  const sketchCount = _tabNotes.filter((n) => n.type === "sketch").length;
   el.innerHTML = `
     <div class="tab-filter-bar">
       <div class="tab-filter-pills" id="notes-filter-pills">
         <button class="tab-pill active" onclick="_setNotesFilter('all',this)">All (${_tabNotes.length})</button>
         ${pinnedCount ? `<button class="tab-pill" onclick="_setNotesFilter('pinned',this)">📌 Pinned (${pinnedCount})</button>` : ""}
         ${quickCount ? `<button class="tab-pill" onclick="_setNotesFilter('quick',this)">⚡ Quick (${quickCount})</button>` : ""}
+        ${sketchCount ? `<button class="tab-pill" onclick="_setNotesFilter('sketch',this)">✏️ Sketch (${sketchCount})</button>` : ""}
       </div>
       <div class="tab-filter-right">
         <select class="form-select form-select-sm" onchange="_setNotesSort(this.value)">
@@ -1648,6 +1726,8 @@ function _renderNotesList() {
   if (_tabNotesFilter === "pinned") notes = notes.filter((n) => n.pinned);
   else if (_tabNotesFilter === "quick")
     notes = notes.filter((n) => n.type === "quick");
+  else if (_tabNotesFilter === "sketch")
+    notes = notes.filter((n) => n.type === "sketch");
   if (_tabNotesSort === "title")
     notes.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
   else if (_tabNotesSort === "created")
@@ -1667,7 +1747,7 @@ function _renderNotesList() {
       <div class="note-item-top">
         <span class="note-title" title="${esc(n.title)}">${n.pinned ? "📌 " : ""}${esc(n.title)}</span>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-          ${n.type === "quick" ? '<span class="badge badge-quick">⚡ Quick</span>' : ""}
+          ${n.type === "quick" ? '<span class="badge badge-quick">⚡ Quick</span>' : n.type === "sketch" ? '<span class="badge badge-sketch">✏️ Sketch</span>' : ""}
           <span class="note-time">${fmtDate(n.updated_at)}</span>
         </div>
       </div>
@@ -1800,11 +1880,13 @@ function todoItemHTML(t) {
     in_progress: "In Progress",
     done: "Done",
   };
+  const hasDesc = !!t.description?.trim();
   return `
   <div class="todo-item ${t.status === "done" ? "is-done" : ""}" id="todo-${t.id}" data-status="${t.status}" data-priority="${t.priority}">
     <div class="todo-check ${t.status}" onclick="cycleTodoStatus(${t.id}, '${t.status}')"></div>
     <span class="todo-title" title="${esc(t.title)}">${esc(t.title)}</span>
     <div class="todo-meta">
+      ${hasDesc ? `<button class="todo-desc-toggle" onclick="toggleTodoDescription(${t.id})" title="Show description">📄</button>` : ""}
       ${t.priority !== "medium" ? `<span class="priority-badge priority-${t.priority}">${t.priority}</span>` : ""}
       ${due ? `<span class="todo-due ${isOver ? "overdue" : ""}">${isOver ? "⚠" : "📅"} ${t.due_date}</span>` : ""}
       <button class="todo-status-cycle status-${t.status}" onclick="cycleTodoStatus(${t.id}, '${t.status}')">${statusLabels[t.status]}</button>
@@ -1813,7 +1895,24 @@ function todoItemHTML(t) {
       <button class="todo-action-btn" onclick="openEditTodoModal(${t.id})" title="Edit">✎</button>
       <button class="todo-action-btn" onclick="deleteTodo(${t.id})" title="Delete">✕</button>
     </div>
-  </div>`;
+  </div>
+  ${
+    hasDesc
+      ? `<div class="todo-desc-body hidden ${t.handwritten ? "handwritten-text" : ""}" id="todo-desc-${t.id}" data-content="${esc(t.description)}"></div>`
+      : ""
+  }`;
+}
+
+function toggleTodoDescription(id) {
+  const el = document.getElementById(`todo-desc-${id}`);
+  if (!el) return;
+  const willShow = el.classList.contains("hidden");
+  el.classList.toggle("hidden");
+  if (willShow && !el.dataset.rendered) {
+    el.innerHTML = renderRichContent(el.dataset.content || "");
+    el.dataset.rendered = "1";
+    hydrateRichEmbeds(el);
+  }
 }
 
 async function quickAddTodo(projectId) {
@@ -1922,6 +2021,13 @@ async function createTodo(projectId) {
 
 async function openEditTodoModal(id) {
   const todo = await get(`/todos/${id}`);
+  registerRichSurface("todo-editor", {
+    textareaId: "todo-edit-description",
+    entityType: "todo",
+    getEntityId: () => id,
+    handwritten: todo.handwritten,
+    onChange: () => {},
+  });
   modal(`
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -1952,6 +2058,11 @@ async function openEditTodoModal(id) {
         <label class="form-label">Due date</label>
         <input id="todo-edit-due" type="date" class="form-input" value="${todo.due_date || ""}"/>
       </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <div class="rich-mini-toolbar">${richToolbarHtml("todo-editor", { full: true })}</div>
+        <textarea id="todo-edit-description" class="form-textarea" rows="4">${esc(todo.description || "")}</textarea>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -1965,12 +2076,21 @@ async function saveTodo(id, projectId) {
   const priority = document.getElementById("todo-edit-priority").value;
   const status = document.getElementById("todo-edit-status").value;
   const due_date = document.getElementById("todo-edit-due").value || null;
+  const description = document.getElementById("todo-edit-description")?.value ?? "";
+  const handwritten = isRichHandwritten("todo-editor");
   if (!title) {
     toast("Title is required", "error");
     return;
   }
   try {
-    await put(`/todos/${id}`, { title, priority, status, due_date });
+    await put(`/todos/${id}`, {
+      title,
+      priority,
+      status,
+      due_date,
+      description,
+      handwritten,
+    });
     closeModal();
     await viewProject(projectId, "todos");
   } catch (e) {
@@ -2009,7 +2129,7 @@ async function renderRemindersTab(projectId, proj) {
       </div>
       <div class="reminder-card-body">
         <div class="reminder-title">${esc(r.title)}</div>
-        ${r.note ? `<div class="reminder-note">${esc(r.note)}</div>` : ""}
+        ${r.note ? `<div class="reminder-note md ${r.handwritten ? "handwritten-text" : ""}">${renderRichContent(r.note)}</div>` : ""}
         <div class="reminder-meta">
           <span class="reminder-time ${past && !r.is_done ? "overdue" : ""}">
             ${past && !r.is_done ? "⚠ Overdue · " : "🔔 "}${label}
@@ -2053,6 +2173,7 @@ async function renderRemindersTab(projectId, proj) {
         : ""
     }
   `;
+  hydrateRichEmbeds(el);
 }
 
 async function toggleReminderDoneInProject(id, newDone, projectId) {
@@ -2099,6 +2220,7 @@ async function saveReminderInProject(id, projectId) {
       note,
       project_id: project_id || null,
       is_done,
+      handwritten: isRichHandwritten("reminder-editor"),
     });
     closeModal();
     toast("Reminder updated", "success");
@@ -2198,7 +2320,7 @@ async function viewReminders() {
       </div>
       <div class="reminder-card-body">
         <div class="reminder-title">${esc(r.title)}</div>
-        ${r.note ? `<div class="reminder-note">${esc(r.note)}</div>` : ""}
+        ${r.note ? `<div class="reminder-note md ${r.handwritten ? "handwritten-text" : ""}">${renderRichContent(r.note)}</div>` : ""}
         <div class="reminder-meta">
           <span class="reminder-time ${past && !r.is_done ? "overdue" : ""}">
             ${past && !r.is_done ? "⚠ Overdue · " : "🔔 "}${label}
@@ -2273,6 +2395,7 @@ async function viewReminders() {
       </div>
     </div>
   `;
+  hydrateRichEmbeds(el);
 }
 
 function copyCalUrl() {
@@ -2304,6 +2427,14 @@ function openNewReminderModal(prefillProjectId = null) {
     .toISOString()
     .slice(0, 16);
 
+  registerRichSurface("reminder-editor", {
+    textareaId: "rem-note",
+    entityType: "reminder",
+    getEntityId: () => null,
+    handwritten: false,
+    onChange: () => {},
+  });
+
   modal(`
     <div class="modal-header">
       <div class="modal-title">New Reminder</div>
@@ -2320,6 +2451,7 @@ function openNewReminderModal(prefillProjectId = null) {
       </div>
       <div class="form-group">
         <label class="form-label">Note</label>
+        <div class="rich-mini-toolbar">${richToolbarHtml("reminder-editor", { full: true })}</div>
         <textarea id="rem-note" class="form-textarea" rows="2" placeholder="Optional details…"></textarea>
       </div>
       <div class="form-group">
@@ -2359,6 +2491,7 @@ async function createReminder(prefillProjectId) {
       remind_at: new Date(remind_at).toISOString(),
       note,
       project_id: project_id || null,
+      handwritten: isRichHandwritten("reminder-editor"),
     });
     closeModal();
     toast("Reminder created", "success");
@@ -2384,6 +2517,14 @@ async function openEditReminderModal(id) {
     .toISOString()
     .slice(0, 16);
 
+  registerRichSurface("reminder-editor", {
+    textareaId: "rem-edit-note",
+    entityType: "reminder",
+    getEntityId: () => id,
+    handwritten: r.handwritten,
+    onChange: () => {},
+  });
+
   modal(`
     <div class="modal-header">
       <div class="modal-title">Edit Reminder</div>
@@ -2400,6 +2541,7 @@ async function openEditReminderModal(id) {
       </div>
       <div class="form-group">
         <label class="form-label">Note</label>
+        <div class="rich-mini-toolbar">${richToolbarHtml("reminder-editor", { full: true })}</div>
         <textarea id="rem-edit-note" class="form-textarea" rows="2">${esc(r.note)}</textarea>
       </div>
       <div class="form-group">
@@ -2445,6 +2587,7 @@ async function saveReminder(id) {
       note,
       project_id: project_id || null,
       is_done,
+      handwritten: isRichHandwritten("reminder-editor"),
     });
     closeModal();
     toast("Reminder updated", "success");
@@ -2928,6 +3071,22 @@ function exportNoteMarkdown(id) {
   a.remove();
 }
 
+function exportSketchPng(id) {
+  const canvas = document.querySelector("#note-sketch-view .sketch-canvas");
+  if (!canvas) return toast("Sketch not ready yet", "error");
+  canvas.toBlob((blob) => {
+    if (!blob) return toast("Export failed", "error");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sketch-${id}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, "image/png");
+}
+
 let _importFile = null;
 
 function _handleImportFile(file) {
@@ -3161,10 +3320,15 @@ function readingTime(text) {
 async function viewNote(id) {
   const el = document.getElementById("content");
   el.innerHTML = loading();
+  if (S.sketchViewBoard) {
+    S.sketchViewBoard.destroy();
+    S.sketchViewBoard = null;
+  }
   const note = await get(`/notes/${id}`);
   const tags = parseTags(note.tags);
-  const wc = wordCount(note.content);
-  const rt = readingTime(note.content);
+  const isSketch = note.type === "sketch";
+  const wc = isSketch ? 0 : wordCount(note.content);
+  const rt = isSketch ? 0 : readingTime(note.content);
 
   S.activeSidebarOrg = note.org_id;
   renderSidebar();
@@ -3174,6 +3338,7 @@ async function viewNote(id) {
   const attachPromise = get(`/attachments/${note.id}`).catch(() => []);
 
   el.innerHTML = `
+    <div class="page-in">
     <div class="page-header">
       <div class="page-header-left">
         <div class="breadcrumb">
@@ -3184,7 +3349,11 @@ async function viewNote(id) {
         </div>
       </div>
       <div class="page-actions">
-        <button class="btn btn-ghost btn-sm" onclick="exportNoteMarkdown(${note.id})" title="Export as Markdown">⬇ .md</button>
+        ${
+          isSketch
+            ? `<button class="btn btn-ghost btn-sm" onclick="exportSketchPng(${note.id})" title="Export as PNG">⬇ .png</button>`
+            : `<button class="btn btn-ghost btn-sm" onclick="exportNoteMarkdown(${note.id})" title="Export as Markdown">⬇ .md</button>`
+        }
         <button class="btn btn-ghost btn-sm" onclick="copyNoteLink(${note.id})" title="Copy link">⎘</button>
         <button class="btn btn-ghost btn-sm" onclick="togglePin(${note.id}, ${note.pinned})">
           ${note.pinned ? "📌 Unpin" : "📌 Pin"}
@@ -3198,9 +3367,8 @@ async function viewNote(id) {
       <div class="note-view-header">
         <h1 class="note-view-title">${esc(note.title)}</h1>
         <div class="note-view-meta">
-          <span class="badge ${note.type === "quick" ? "badge-quick" : "badge-desc"}">${note.type === "quick" ? "⚡ Quick" : "📝 Descriptive"}</span>
-          <span class="note-stat-pill">🕐 ${rt} min read</span>
-          <span class="note-stat-pill">${wc.toLocaleString()} words</span>
+          <span class="badge ${note.type === "quick" ? "badge-quick" : isSketch ? "badge-sketch" : "badge-desc"}">${note.type === "quick" ? "⚡ Quick" : isSketch ? "✏️ Sketch" : "📝 Descriptive"}</span>
+          ${isSketch ? "" : `<span class="note-stat-pill">🕐 ${rt} min read</span><span class="note-stat-pill">${wc.toLocaleString()} words</span>`}
           <span>Updated ${fmtDate(note.updated_at)}</span>
           <span>·</span>
           <span>Created ${fmtDate(note.created_at)}</span>
@@ -3222,12 +3390,17 @@ async function viewNote(id) {
       </div>
 
       ${
-        note.type === "quick"
-          ? `<div class="note-quick-body">${esc(note.content).replace(/\n/g, "<br>")}</div>`
-          : `<div class="md">${md(note.content)}</div>`
+        isSketch
+          ? `<div class="note-sketch-body" id="note-sketch-view"></div>`
+          : note.type === "quick"
+            ? `<div class="note-quick-body ${note.handwritten ? "handwritten-text" : ""}">${esc(note.content).replace(/\n/g, "<br>")}</div>`
+            : `<div class="md ${note.handwritten ? "handwritten-text" : ""}" id="note-view-body">${renderRichContent(note.content)}</div>`
       }
 
-      <div class="note-ai-actions">
+      ${
+        isSketch
+          ? ""
+          : `<div class="note-ai-actions">
         <button class="note-ai-btn" onclick="summariseNote(${note.id})">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           AI Summary
@@ -3237,7 +3410,8 @@ async function viewNote(id) {
           Ask about this
         </button>
       </div>
-      <div id="note-ai-summary-area"></div>
+      <div id="note-ai-summary-area"></div>`
+      }
 
       <div class="note-attachments-view" id="note-attachments-view">
         <div class="note-related-label" style="margin-top:32px;padding-top:20px;border-top:1px solid var(--border-soft)">
@@ -3248,7 +3422,21 @@ async function viewNote(id) {
 
       <div id="note-related-area"></div>
     </div>
+    </div>
   `;
+
+  if (isSketch) {
+    const viewEl = document.getElementById("note-sketch-view");
+    let data = null;
+    try {
+      data = note.content ? JSON.parse(note.content) : null;
+    } catch {
+      data = null;
+    }
+    if (viewEl) S.sketchViewBoard = createSketchBoard(viewEl, { data, readOnly: true });
+  } else if (note.type !== "quick") {
+    hydrateRichEmbeds(document.getElementById("note-view-body"));
+  }
 
   // Resolve already-started promises for attachments and related notes
   attachPromise
@@ -3359,6 +3547,9 @@ async function viewNoteEditor(noteId, projectId) {
   S.editType = note?.type ?? "descriptive";
   S.isDirty = false;
   S.editorView = "split";
+  if (S.sketchBoard) S.sketchBoard.destroy();
+  S.sketchBoard = null;
+  S.sketchDraftContent = null;
 
   // Load label suggestions for autocomplete
   try {
@@ -3369,16 +3560,30 @@ async function viewNoteEditor(noteId, projectId) {
 
   renderSidebar();
 
+  registerRichSurface("note-editor", {
+    textareaId: "et-content",
+    entityType: "note",
+    getEntityId: () => editorNoteId(),
+    handwritten: note?.handwritten,
+    onChange: () => {
+      refreshPreview();
+      markDirty();
+      updateEditorWordCount();
+    },
+  });
+
   const title = note?.title ?? "";
   const content = note?.content ?? "";
+  const isSketch = S.editType === "sketch";
   const editPaneHidden =
-    S.editType === "descriptive" && S.editorView === "preview";
-  const prevPaneHidden = S.editType === "quick" || S.editorView === "edit";
+    isSketch || (S.editType === "descriptive" && S.editorView === "preview");
+  const prevPaneHidden =
+    isSketch || S.editType === "quick" || S.editorView === "edit";
   const editorPlaceholder =
     S.editType === "quick" ? "Jot it down…" : "Start writing in Markdown…";
 
   el.innerHTML = `
-    <div class="note-editor">
+    <div class="note-editor page-in">
       <div class="editor-top">
         <div class="breadcrumb" style="margin-bottom:10px">
           <a href="#/">Dashboard</a>
@@ -3390,6 +3595,7 @@ async function viewNoteEditor(noteId, projectId) {
         <div class="type-toggle">
           <button class="type-btn ${S.editType === "quick" ? "on" : ""}" onclick="setNoteType('quick')">⚡ Quick</button>
           <button class="type-btn ${S.editType === "descriptive" ? "on" : ""}" onclick="setNoteType('descriptive')">📝 Descriptive</button>
+          <button class="type-btn ${S.editType === "sketch" ? "on" : ""}" onclick="setNoteType('sketch')">✏️ Sketch</button>
         </div>
         <input class="editor-title" id="et-title" type="text"
           placeholder="${S.editType === "quick" ? "Title (optional — auto-filled from content)" : "Note title…"}" value="${esc(title)}"
@@ -3408,7 +3614,7 @@ async function viewNoteEditor(noteId, projectId) {
             </div>
           </div>
           <span class="save-status" id="save-status"></span>
-          <span class="editor-wordcount" id="editor-wc">${wordCount(content).toLocaleString()} words</span>
+          <span class="editor-wordcount ${isSketch ? "hidden" : ""}" id="editor-wc">${isSketch ? "" : `${wordCount(content).toLocaleString()} words`}</span>
           <div style="display:flex;gap:7px;margin-left:auto">
             <button class="tb-btn ai-grammar-btn" id="grammar-btn" title="AI Grammar Check" onclick="runGrammarCheck()">✦ Grammar</button>
             <button class="tb-btn" id="focus-btn" title="Focus mode" onclick="toggleFocusMode()">⤢</button>
@@ -3420,7 +3626,7 @@ async function viewNoteEditor(noteId, projectId) {
         </div>
       </div>
 
-      <div class="editor-toolbar${S.editType === "quick" ? " hidden" : ""}">
+      <div class="editor-toolbar${S.editType === "quick" || isSketch ? " hidden" : ""}">
         <button class="tb-btn" title="Bold (Ctrl+B)"         onclick="ins('bold')"><b>B</b></button>
         <button class="tb-btn" title="Italic (Ctrl+I)"       onclick="ins('italic')"><i>I</i></button>
         <button class="tb-btn" title="Strikethrough"         onclick="ins('strike')"><s>S</s></button>
@@ -3438,6 +3644,8 @@ async function viewNoteEditor(noteId, projectId) {
         <button class="tb-btn" title="Link"                  onclick="ins('link')">🔗</button>
         <button class="tb-btn" title="Horizontal rule"       onclick="ins('hr')">—</button>
         <button class="tb-btn" title="Table"                 onclick="ins('table')">⊞</button>
+        <div class="tb-sep"></div>
+        ${richToolbarHtml("note-editor", { full: false })}
         <div class="tb-view">
           <button class="tb-view-btn ${S.editorView === "edit" ? "on" : ""}"    onclick="setView('edit')">Edit</button>
           <button class="tb-view-btn ${S.editorView === "split" ? "on" : ""}"   onclick="setView('split')">Split</button>
@@ -3449,13 +3657,15 @@ async function viewNoteEditor(noteId, projectId) {
         <div class="editor-pane ${editPaneHidden ? "hidden" : ""}">
           <textarea class="editor-textarea" id="et-content"
             placeholder="${editorPlaceholder}"
-            oninput="markDirty();refreshPreview();updateEditorWordCount()"
+            oninput="autoGrow(this);markDirty();refreshPreview();updateEditorWordCount()"
             onkeydown="onEditorKeyDown(event)">${esc(content)}</textarea>
         </div>
         <div class="editor-pane ${prevPaneHidden ? "hidden" : ""}">
-          <div class="editor-preview md" id="et-preview">${md(content)}</div>
+          <div class="editor-preview md ${note?.handwritten ? "handwritten-text" : ""}" id="et-preview">${renderRichContent(content)}</div>
         </div>
       </div>
+
+      <div class="sketch-editor-wrap ${isSketch ? "" : "hidden"}" id="et-sketch"></div>
 
       <!-- Grammar check results panel (hidden by default) -->
       <div class="grammar-panel hidden" id="grammar-panel">
@@ -3496,6 +3706,29 @@ async function viewNoteEditor(noteId, projectId) {
   `;
 
   if (noteId) loadAttachments(noteId);
+
+  // Auto-size the textarea to its content on load
+  setTimeout(() => {
+    const ta = document.getElementById("et-content");
+    if (ta) autoGrow(ta);
+  }, 0);
+  hydrateRichEmbeds(document.getElementById("et-preview"));
+
+  if (isSketch) mountSketchEditor(content);
+}
+
+function mountSketchEditor(rawContent) {
+  const el = document.getElementById("et-sketch");
+  if (!el) return;
+  let data = null;
+  if (rawContent) {
+    try {
+      data = JSON.parse(rawContent);
+    } catch {
+      data = null;
+    }
+  }
+  S.sketchBoard = createSketchBoard(el, { data, onChange: markDirty });
 }
 
 function setView(v) {
@@ -3511,20 +3744,40 @@ function setView(v) {
 }
 
 function setNoteType(type) {
+  const prevType = S.editType;
+  if (prevType === "sketch" && type !== "sketch" && S.sketchBoard) {
+    S.sketchDraftContent = JSON.stringify(S.sketchBoard.serialize());
+    S.sketchBoard.destroy();
+    S.sketchBoard = null;
+  }
+
   S.editType = type;
   document
     .querySelectorAll(".type-btn")
     .forEach((b, i) =>
-      b.classList.toggle("on", ["quick", "descriptive"][i] === type),
+      b.classList.toggle("on", ["quick", "descriptive", "sketch"][i] === type),
     );
   const toolbar = document.querySelector(".editor-toolbar");
-  if (toolbar) toolbar.classList.toggle("hidden", type === "quick");
-  const [editP, prevP] = document.querySelectorAll(".editor-pane");
-  if (type === "quick") {
-    if (editP) editP.classList.remove("hidden");
-    if (prevP) prevP.classList.add("hidden");
+  const sketchWrap = document.getElementById("et-sketch");
+  if (type === "sketch") {
+    if (toolbar) toolbar.classList.add("hidden");
+    document
+      .querySelectorAll(".editor-pane")
+      .forEach((p) => p.classList.add("hidden"));
+    if (sketchWrap) {
+      sketchWrap.classList.remove("hidden");
+      if (!S.sketchBoard) mountSketchEditor(S.sketchDraftContent || "");
+    }
   } else {
-    setView(S.editorView);
+    if (sketchWrap) sketchWrap.classList.add("hidden");
+    if (toolbar) toolbar.classList.toggle("hidden", type === "quick");
+    const [editP, prevP] = document.querySelectorAll(".editor-pane");
+    if (type === "quick") {
+      if (editP) editP.classList.remove("hidden");
+      if (prevP) prevP.classList.add("hidden");
+    } else {
+      setView(S.editorView);
+    }
   }
   // Update title placeholder to reflect optional/required
   const titleInput = document.getElementById("et-title");
@@ -3540,15 +3793,30 @@ function setNoteType(type) {
 function refreshPreview() {
   const ta = document.getElementById("et-content");
   const pv = document.getElementById("et-preview");
-  if (ta && pv) pv.innerHTML = md(ta.value);
+  if (!ta || !pv) return;
+  pv.innerHTML = renderRichContent(ta.value);
+  pv.classList.toggle("handwritten-text", isRichHandwritten("note-editor"));
+  hydrateRichEmbeds(pv);
 }
 
 // ─── Auto-save ────────────────────────────────────────────────────────────────
+// ─── Auto-growing textarea (Obsidian-like) ────────────────────────────────────
+function autoGrow(el) {
+  el.style.height = "auto";
+  el.style.height = Math.max(el.scrollHeight, window.innerHeight * 0.7) + "px";
+}
+
 function markDirty() {
   S.isDirty = true;
   setSaveStatus("unsaved");
   clearTimeout(S.autosaveTimer);
   S.autosaveTimer = setTimeout(autosave, 1800);
+}
+
+function getEditorContent() {
+  if (S.editType === "sketch")
+    return S.sketchBoard ? JSON.stringify(S.sketchBoard.serialize()) : "";
+  return document.getElementById("et-content")?.value || "";
 }
 
 async function autosave() {
@@ -3558,14 +3826,15 @@ async function autosave() {
 
   setSaveStatus("saving");
   const title = document.getElementById("et-title")?.value || "Untitled";
-  const content = document.getElementById("et-content")?.value || "";
+  const content = getEditorContent();
   const tags = JSON.stringify(S.editTags);
   const type = S.editType;
+  const handwritten = isRichHandwritten("note-editor");
 
   try {
     let savedId = nid;
     if (nid) {
-      await put(`/notes/${nid}`, { title, content, tags, type });
+      await put(`/notes/${nid}`, { title, content, tags, type, handwritten });
     } else {
       const created = await post("/notes", {
         project_id: pid,
@@ -3573,6 +3842,7 @@ async function autosave() {
         content,
         tags,
         type,
+        handwritten,
       });
       savedId = created.id;
       // Switch URL to edit mode without re-rendering
@@ -3627,9 +3897,10 @@ async function saveNote(noteId, projectId) {
   const actualId = noteId || editorNoteId();
 
   const title = document.getElementById("et-title")?.value || "Untitled";
-  const content = document.getElementById("et-content")?.value || "";
+  const content = getEditorContent();
   const tags = JSON.stringify(S.editTags);
   const type = S.editType;
+  const handwritten = isRichHandwritten("note-editor");
 
   // Cancel any pending autosave so we don't double-save
   clearTimeout(S.autosaveTimer);
@@ -3639,7 +3910,7 @@ async function saveNote(noteId, projectId) {
   try {
     let savedId = actualId;
     if (actualId) {
-      await put(`/notes/${actualId}`, { title, content, tags, type });
+      await put(`/notes/${actualId}`, { title, content, tags, type, handwritten });
       toast("Note saved", "success");
       S.isDirty = false;
     } else {
@@ -3649,6 +3920,7 @@ async function saveNote(noteId, projectId) {
         content,
         tags,
         type,
+        handwritten,
       });
       savedId = n.id;
       toast("Note created", "success");
