@@ -108,6 +108,8 @@ router.put("/settings", async (req, res, next) => {
       "minio_secret_key",
       "theme",
       "accent_color",
+      "font_size",
+      "font_family",
     ];
     for (const k of allowed) {
       if (req.body[k] !== undefined) await setSetting(k, req.body[k]);

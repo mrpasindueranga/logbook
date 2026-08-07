@@ -22,6 +22,9 @@
   --radius-lg: 12px;
   --sidebar-w: 242px;
   --transition: 0.15s ease;
+  --app-font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --app-font-scale: 1;
 }
 
 /* ── Light theme ──────────────────────────────────────────────────────────── */
@@ -58,14 +61,14 @@ body.light .search-box {
   padding: 0;
 }
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--app-font-family);
   background: var(--bg);
   color: var(--text);
   height: 100vh;
   overflow: hidden;
   font-size: 14px;
   line-height: 1.5;
+  zoom: var(--app-font-scale);
 }
 a {
   color: inherit;
@@ -1993,12 +1996,30 @@ div.note-item {
 .editor-panes {
   margin-top: 4px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 20px;
 }
 .editor-pane {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+}
+.editor-panes .editor-pane:first-child:not(.hidden) ~ .editor-pane:not(.hidden) {
+  border-left: 1px solid var(--border-soft);
+  padding-left: 20px;
+}
+@media (max-width: 900px) {
+  .editor-panes {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .editor-panes .editor-pane:first-child:not(.hidden) ~ .editor-pane:not(.hidden) {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid var(--border-soft);
+    padding-top: 12px;
+  }
 }
 
 /* ── Obsidian-like Markdown textarea ──────────────────────────────────────── */
@@ -2622,10 +2643,14 @@ hr.divider {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
   padding: 7px 10px;
   border-radius: var(--radius);
+  background: none;
+  border: none;
   color: var(--text-muted);
   font-size: 13px;
+  text-align: left;
   cursor: pointer;
   transition:
     background var(--transition),
@@ -3055,6 +3080,22 @@ hr.divider {
 }
 
 /* Editor */
+.story-editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.story-editor-topbar .save-status {
+  margin-left: 0;
+}
+.story-editor-topbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
 .story-title-input {
   display: block;
   width: 100%;
@@ -3169,12 +3210,6 @@ hr.divider {
   overflow-y: auto;
   line-height: 1.7;
 }
-.story-editor-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-}
-
 /* Empty state */
 .story-empty {
   text-align: center;

@@ -85,6 +85,38 @@ const ACCENT_PALETTE = [
   },
 ];
 
+// ─── Font settings (appearance customisation) ────────────────────────────────
+const FONT_SIZES = [
+  { id: "small", label: "S", scale: 0.9 },
+  { id: "medium", label: "M", scale: 1 },
+  { id: "large", label: "L", scale: 1.15 },
+  { id: "xlarge", label: "XL", scale: 1.3 },
+];
+const FONT_FAMILIES = [
+  {
+    id: "system",
+    label: "System Default",
+    stack:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+  },
+  {
+    id: "serif",
+    label: "Serif",
+    stack: 'Georgia, "Times New Roman", serif',
+  },
+  {
+    id: "rounded",
+    label: "Rounded",
+    stack:
+      '"Comic Sans MS", "SF Pro Rounded", "Segoe UI Rounded", system-ui, sans-serif',
+  },
+  {
+    id: "mono",
+    label: "Monospace",
+    stack: '"SF Mono", "Fira Code", Consolas, monospace',
+  },
+];
+
 // ─── User state ───────────────────────────────────────────────────────────────
 let _userName = ""; // populated at boot from settings; used for greetings
 
@@ -106,6 +138,14 @@ const S = {
 };
 
 let dashProjects = []; // cached for dashboard org-switcher filtering
+
+// Monotonically-increasing navigation token. Bumped on every route() dispatch
+// so that a slow/stale async view call (e.g. from rapid tab-clicking) can
+// detect it's been superseded and bail out instead of racing a newer
+// navigation to update the DOM — without this, whichever fetch happens to
+// resolve last would win regardless of which tab the user is actually on,
+// which reads as the page "getting stuck" on the wrong content.
+let _navToken = 0;
 
 // ─── Section UI collapse state (localStorage, keyed by DB section id) ──────────
 function _getSectionCollapseMap() {
@@ -182,6 +222,25 @@ function fmtDate(str) {
     day: "numeric",
     year: d.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
   });
+}
+
+// Strips Markdown syntax from a plain-text excerpt/snippet so raw fences,
+// backticks, and heading markers don't leak into list previews as literal
+// punctuation (excerpts are truncated source text, never run through md()).
+function stripMdSyntax(text) {
+  return (text || "")
+    .replace(/```(\w+)?\n?([\s\S]*?)```/g, "$2") // fenced code blocks — keep the code, drop the fence/lang tag
+    .replace(/^```\w*\n?/, "") // an opening fence with no closing ``` (truncated mid-block excerpt)
+    .replace(/`([^`]*)`/g, "$1") // inline code
+    .replace(/^#{1,6}\s+/gm, "") // headings
+    .replace(/(\*\*|__)(.*?)\1/g, "$2") // bold
+    .replace(/(\*|_)(.*?)\1/g, "$2") // italic
+    .replace(/~~(.*?)~~/g, "$1") // strikethrough
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1") // images
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links
+    .replace(/^>\s?/gm, "") // blockquotes
+    .replace(/\s*\n\s*/g, " ") // collapse newlines into single-line preview
+    .trim();
 }
 
 function parseTags(raw) {
@@ -548,6 +607,11 @@ async function route() {
     clearTimeout(S.autosaveTimer);
     S.autosaveTimer = null;
   }
+  if (_storyAutosaveTimer) {
+    clearTimeout(_storyAutosaveTimer);
+    _storyAutosaveTimer = null;
+  }
+  const myToken = ++_navToken;
   const r = parseRoute();
   renderSidebar();
   try {
@@ -570,6 +634,7 @@ async function route() {
         return await viewDashboard();
     }
   } catch (err) {
+    if (myToken !== _navToken) return; // superseded by a newer navigation
     document.getElementById("content").innerHTML =
       `<div class="empty"><h3>Something went wrong</h3><p>${esc(err.message)}</p></div>`;
   }
@@ -1022,9 +1087,11 @@ function filterDashboardOrg(orgId, btn) {
 
 // ─── Org view ─────────────────────────────────────────────────────────────────
 async function viewOrg(id) {
+  const myToken = _navToken;
   const el = document.getElementById("content");
   el.innerHTML = loading();
   const org = await get(`/organizations/${id}`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
 
   // Update sidebar
   S.activeSidebarOrg = id;
@@ -1111,6 +1178,7 @@ async function viewOrg(id) {
 
 // ─── Project view ─────────────────────────────────────────────────────────────
 async function viewProject(id, tab = "story") {
+  const myToken = _navToken;
   const el = document.getElementById("content");
   // Switching tabs within the project we're already viewing shouldn't blank
   // the page to a spinner — keep the current content up while the fresh
@@ -1118,6 +1186,7 @@ async function viewProject(id, tab = "story") {
   const isTabSwitch = el.dataset.projectId === String(id);
   if (!isTabSwitch) el.innerHTML = loading();
   const proj = await get(`/projects/${id}`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
 
   S.activeSidebarOrg = proj.org_id;
 
@@ -1133,6 +1202,7 @@ async function viewProject(id, tab = "story") {
       : Promise.resolve(null),
     get(`/todos?project_id=${id}`).catch(() => []),
   ]);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
 
   if (orgFull) {
     const cached = S.orgs.find((o) => o.id === proj.org_id);
@@ -1206,6 +1276,7 @@ let _storyProjId = null;
 let _storyPages = [];
 let _storyPageId = null;
 let _storyCurrentPage = null;
+let _storyAutosaveTimer = null;
 
 // ─── Tab filter / sort state ──────────────────────────────────────────────────────────────────────────────
 let _tabNotes = [],
@@ -1235,14 +1306,22 @@ function _buildStoryTOC(content) {
 }
 
 async function renderStoryTab(projectId) {
-  _storyProjId = projectId;
-  _storyPageId = null;
-  _storyCurrentPage = null;
+  const myToken = _navToken;
+  // Revisiting the same project's Story tab: keep whatever's on screen (and
+  // which page was open) instead of flashing a spinner and resetting to page 1.
+  const sameProject = _storyProjId === projectId && _storyPages.length;
+  const keepPageId = sameProject ? _storyPageId : null;
   const el = document.getElementById("tab-content");
-  el.innerHTML = loading();
-  _storyPages = await get(`/projects/${projectId}/story`);
+  if (!sameProject) el.innerHTML = loading();
+  _storyProjId = projectId;
+  const freshPages = await get(`/projects/${projectId}/story`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
+  _storyPages = freshPages;
 
-  el.innerHTML = `
+  if (!sameProject || !document.getElementById("story-nav-list")) {
+    _storyPageId = null;
+    _storyCurrentPage = null;
+    el.innerHTML = `
     <div class="story-layout">
       <aside class="story-nav" id="story-nav">
         <div class="story-nav-header">
@@ -1255,9 +1334,14 @@ async function renderStoryTab(projectId) {
         <div id="story-page-area"></div>
       </div>
     </div>`;
+  }
 
   _renderStoryNav();
-  if (_storyPages.length) {
+  const stillExists =
+    keepPageId && _storyPages.some((p) => p.id === keepPageId);
+  if (stillExists) {
+    if (!_storyCurrentPage) await _loadStoryPage(keepPageId);
+  } else if (_storyPages.length) {
     await _loadStoryPage(_storyPages[0].id);
   } else {
     _showStoryEmpty();
@@ -1292,9 +1376,14 @@ function _showStoryEmpty() {
 }
 
 async function _loadStoryPage(pageId) {
+  clearTimeout(_storyAutosaveTimer);
+  _storyAutosaveTimer = null;
+  const myToken = _navToken;
   _storyPageId = pageId;
   _renderStoryNav();
-  _storyCurrentPage = await get(`/projects/${_storyProjId}/story/${pageId}`);
+  const page = await get(`/projects/${_storyProjId}/story/${pageId}`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
+  _storyCurrentPage = page;
   _renderStoryPageView();
 }
 
@@ -1338,7 +1427,7 @@ function _renderStoryPageView() {
           </div>
         </div>
         <h1 class="story-title-display">${esc(page.title || "Untitled")}</h1>
-        <div class="story-rendered" id="story-rendered"></div>
+        <div class="story-rendered markdown-body" id="story-rendered"></div>
       </div>
       ${tocHtml}
     </div>`;
@@ -1378,12 +1467,21 @@ function storyStartEdit() {
     onChange: () => {
       storyUpdatePreview();
       autoGrow(document.getElementById("story-editor"));
+      _storyMarkDirty();
     },
   });
 
   area.innerHTML = `
     <div class="story-editor-wrap">
+      <div class="story-editor-topbar">
+        <span class="save-status" id="story-save-status"></span>
+        <div class="story-editor-topbar-actions">
+          <button class="btn btn-secondary btn-sm" onclick="_storyCancelEdit()">Cancel</button>
+          <button class="btn btn-primary btn-sm"   onclick="storySavePage()">Save</button>
+        </div>
+      </div>
       <input id="story-title-input" class="story-title-input"
+             oninput="_storyMarkDirty()"
              value="${esc(page.title || "")}" placeholder="Page title…">
       <div class="story-toolbar">
         <button class="story-tb-btn" title="Bold"          onclick="_storyTbBold()"><b>B</b></button>
@@ -1418,15 +1516,11 @@ function storyStartEdit() {
       </div>
       <textarea id="story-editor" class="story-editor"
         placeholder="Write in Markdown… paste or drop images to embed them."
-        oninput="autoGrow(this);storyUpdatePreview()"
+        oninput="autoGrow(this);storyUpdatePreview();_storyMarkDirty()"
         onpaste="storyHandlePaste(event)"
         ondragover="event.preventDefault()"
         ondrop="storyHandleDrop(event)"></textarea>
-      <div id="story-editor-preview" class="story-editor-preview hidden"></div>
-      <div class="story-editor-actions">
-        <button class="btn btn-primary btn-sm"   onclick="storySavePage()">Save</button>
-        <button class="btn btn-secondary btn-sm" onclick="_renderStoryPageView()">Cancel</button>
-      </div>
+      <div id="story-editor-preview" class="story-editor-preview markdown-body hidden"></div>
     </div>`;
 
   document.getElementById("story-editor").value = page.content || "";
@@ -1611,7 +1705,28 @@ async function storyHandleDrop(event) {
 }
 
 // ── Page CRUD ─────────────────────────────────────────────────────────────────
-async function storySavePage() {
+function _storySetSaveStatus(s) {
+  const el = document.getElementById("story-save-status");
+  if (!el) return;
+  const map = {
+    unsaved: ["Unsaved", ""],
+    saving: ["Saving…", "saving"],
+    saved: ["Saved", "saved"],
+    error: ["Save failed", "error"],
+  };
+  const [txt, cls] = map[s] || ["", ""];
+  el.textContent = txt;
+  el.className = `save-status ${cls}`;
+}
+
+function _storyMarkDirty() {
+  _storySetSaveStatus("unsaved");
+  clearTimeout(_storyAutosaveTimer);
+  _storyAutosaveTimer = setTimeout(_storyAutosave, 1800);
+}
+
+/** Persist the editor's current title/content to the server and sync local caches. */
+async function _storyPersist() {
   const titleEl = document.getElementById("story-title-input");
   const editorEl = document.getElementById("story-editor");
   if (!titleEl || !editorEl || !_storyCurrentPage) return;
@@ -1636,6 +1751,36 @@ async function storySavePage() {
     pg.updated_at = _storyCurrentPage.updated_at;
   }
   _renderStoryNav();
+}
+
+async function _storyAutosave() {
+  if (!_storyCurrentPage) return;
+  _storySetSaveStatus("saving");
+  try {
+    await _storyPersist();
+    _storySetSaveStatus("saved");
+  } catch (e) {
+    _storySetSaveStatus("error");
+  }
+}
+
+async function storySavePage() {
+  clearTimeout(_storyAutosaveTimer);
+  _storyAutosaveTimer = null;
+  _storySetSaveStatus("saving");
+  try {
+    await _storyPersist();
+    _storySetSaveStatus("saved");
+    _renderStoryPageView();
+  } catch (e) {
+    _storySetSaveStatus("error");
+    toast(e.message, "error");
+  }
+}
+
+function _storyCancelEdit() {
+  clearTimeout(_storyAutosaveTimer);
+  _storyAutosaveTimer = null;
   _renderStoryPageView();
 }
 
@@ -1751,7 +1896,7 @@ function _renderNotesList() {
           <span class="note-time">${fmtDate(n.updated_at)}</span>
         </div>
       </div>
-      ${n.excerpt && n.type !== "quick" ? `<div class="note-excerpt">${esc(n.excerpt)}</div>` : n.type === "quick" && n.excerpt ? `<div class="note-excerpt" style="font-family:inherit">${esc(n.excerpt)}</div>` : ""}
+      ${n.excerpt && n.type !== "quick" ? `<div class="note-excerpt">${esc(stripMdSyntax(n.excerpt))}</div>` : n.type === "quick" && n.excerpt ? `<div class="note-excerpt" style="font-family:inherit">${esc(n.excerpt)}</div>` : ""}
       ${tags.length ? `<div class="note-tags">${tagsHtml(tags)}</div>` : ""}
       <div class="note-item-actions" onclick="event.stopPropagation()">
         <button class="note-action-btn${n.pinned ? " active" : ""}" onclick="pinNoteInProject(${n.id},${n.pinned ? 1 : 0})">${n.pinned ? "📌 Unpin" : "📍 Pin"}</button>
@@ -1898,7 +2043,7 @@ function todoItemHTML(t) {
   </div>
   ${
     hasDesc
-      ? `<div class="todo-desc-body hidden ${t.handwritten ? "handwritten-text" : ""}" id="todo-desc-${t.id}" data-content="${esc(t.description)}"></div>`
+      ? `<div class="todo-desc-body markdown-body hidden ${t.handwritten ? "handwritten-text" : ""}" id="todo-desc-${t.id}" data-content="${esc(t.description)}"></div>`
       : ""
   }`;
 }
@@ -2099,10 +2244,16 @@ async function saveTodo(id, projectId) {
 }
 
 // ─── Reminders tab (per-project) ─────────────────────────────────────────────
+let _remindersTabProjId = null;
 async function renderRemindersTab(projectId, proj) {
+  const myToken = _navToken;
+  const sameProject =
+    _remindersTabProjId === projectId && document.querySelector(".reminder-section");
   const el = document.getElementById("tab-content");
-  el.innerHTML = loading();
+  if (!sameProject) el.innerHTML = loading();
+  _remindersTabProjId = projectId;
   const reminders = await get(`/reminders?project_id=${projectId}`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
 
   const now = new Date();
   const active = reminders.filter((r) => !r.is_done);
@@ -2129,7 +2280,7 @@ async function renderRemindersTab(projectId, proj) {
       </div>
       <div class="reminder-card-body">
         <div class="reminder-title">${esc(r.title)}</div>
-        ${r.note ? `<div class="reminder-note md ${r.handwritten ? "handwritten-text" : ""}">${renderRichContent(r.note)}</div>` : ""}
+        ${r.note ? `<div class="reminder-note md markdown-body ${r.handwritten ? "handwritten-text" : ""}">${renderRichContent(r.note)}</div>` : ""}
         <div class="reminder-meta">
           <span class="reminder-time ${past && !r.is_done ? "overdue" : ""}">
             ${past && !r.is_done ? "⚠ Overdue · " : "🔔 "}${label}
@@ -2320,7 +2471,7 @@ async function viewReminders() {
       </div>
       <div class="reminder-card-body">
         <div class="reminder-title">${esc(r.title)}</div>
-        ${r.note ? `<div class="reminder-note md ${r.handwritten ? "handwritten-text" : ""}">${renderRichContent(r.note)}</div>` : ""}
+        ${r.note ? `<div class="reminder-note md markdown-body ${r.handwritten ? "handwritten-text" : ""}">${renderRichContent(r.note)}</div>` : ""}
         <div class="reminder-meta">
           <span class="reminder-time ${past && !r.is_done ? "overdue" : ""}">
             ${past && !r.is_done ? "⚠ Overdue · " : "🔔 "}${label}
@@ -2641,6 +2792,9 @@ async function viewSettings() {
   const hasKey = cfg.ai_api_key && cfg.ai_api_key.length > 0;
   const currentTheme = localStorage.getItem("logbook_theme") || "dark";
   const currentAccent = localStorage.getItem("logbook_accent") || "blue";
+  const currentFontSize = localStorage.getItem("logbook_font_size") || "medium";
+  const currentFontFamily =
+    localStorage.getItem("logbook_font_family") || "system";
   const storageOk = cfg._storageConfigured;
 
   el.innerHTML = `
@@ -2686,6 +2840,19 @@ async function viewSettings() {
               ${ACCENT_PALETTE.map((p) => `<button class="color-swatch${currentAccent === p.id ? " active" : ""}" data-accent="${p.id}" style="background:${p.dark}" onclick="applyAccent('${p.id}')" title="${p.id}"></button>`).join("")}
             </div>
             <div class="help">Used for buttons, links and highlights throughout the app.</div>
+          </div>
+          <div class="settings-row">
+            <label>Font Size</label>
+            <div class="theme-toggle-row">
+              ${FONT_SIZES.map((f) => `<button class="theme-btn font-size-btn${currentFontSize === f.id ? " active" : ""}" data-font-size="${f.id}" onclick="applyFontSize('${f.id}')">${f.label}</button>`).join("")}
+            </div>
+          </div>
+          <div class="settings-row">
+            <label>Font Style</label>
+            <select id="cfg-font-family" class="form-select" onchange="applyFontFamily(this.value)">
+              ${FONT_FAMILIES.map((f) => `<option value="${f.id}" style="font-family:${f.stack}" ${currentFontFamily === f.id ? "selected" : ""}>${f.label}</option>`).join("")}
+            </select>
+            <div class="help">Changes the typeface used across the app. Code and handwritten note fonts are unaffected.</div>
           </div>
         </div>
 
@@ -2872,6 +3039,7 @@ function _applyAccentVars(id) {
 
 function applyTheme(theme) {
   document.body.classList.toggle("light", theme === "light");
+  _setGhMarkdownTheme(theme);
   localStorage.setItem("logbook_theme", theme);
   document
     .querySelectorAll(".theme-btn")
@@ -2892,6 +3060,34 @@ function applyAccent(id) {
     .querySelector(`.color-swatch[data-accent="${id}"]`)
     ?.classList.add("active");
   put("/ai/settings", { accent_color: id }).catch(() => {});
+}
+
+function _applyFontSizeVar(id) {
+  const f = FONT_SIZES.find((s) => s.id === id) || FONT_SIZES[1];
+  document.documentElement.style.setProperty("--app-font-scale", f.scale);
+}
+
+function _applyFontFamilyVar(id) {
+  const f = FONT_FAMILIES.find((f) => f.id === id) || FONT_FAMILIES[0];
+  document.documentElement.style.setProperty("--app-font-family", f.stack);
+}
+
+function applyFontSize(id) {
+  _applyFontSizeVar(id);
+  localStorage.setItem("logbook_font_size", id);
+  document
+    .querySelectorAll(".font-size-btn")
+    .forEach((b) => b.classList.remove("active"));
+  document
+    .querySelector(`.font-size-btn[data-font-size="${id}"]`)
+    ?.classList.add("active");
+  put("/ai/settings", { font_size: id }).catch(() => {});
+}
+
+function applyFontFamily(id) {
+  _applyFontFamilyVar(id);
+  localStorage.setItem("logbook_font_family", id);
+  put("/ai/settings", { font_family: id }).catch(() => {});
 }
 
 // ─── Section CRUD (DB-backed) ──────────────────────────────────────────────────
@@ -3234,6 +3430,39 @@ function _restoreSidebarState() {
   }
 }
 
+// ─── Full screen ──────────────────────────────────────────────────────────────
+const FULLSCREEN_ICON_EXPAND = `
+  <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+  <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+  <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+  <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+`;
+const FULLSCREEN_ICON_COMPRESS = `
+  <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+  <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+  <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+  <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+`;
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.().catch(() => {});
+  } else {
+    document.exitFullscreen?.();
+  }
+}
+
+function _syncFullscreenButton() {
+  const icon = document.getElementById("fullscreen-icon");
+  const label = document.getElementById("fullscreen-label");
+  if (!icon || !label) return;
+  const isFullscreen = !!document.fullscreenElement;
+  icon.innerHTML = isFullscreen
+    ? FULLSCREEN_ICON_COMPRESS
+    : FULLSCREEN_ICON_EXPAND;
+  label.textContent = isFullscreen ? "Exit Full Screen" : "Full Screen";
+}
+
 function fillAIQuery(el) {
   document.getElementById("ai-input").value = el.textContent.trim();
   document.getElementById("ai-input").focus();
@@ -3318,6 +3547,7 @@ function readingTime(text) {
 }
 
 async function viewNote(id) {
+  const myToken = _navToken;
   const el = document.getElementById("content");
   el.innerHTML = loading();
   if (S.sketchViewBoard) {
@@ -3325,6 +3555,7 @@ async function viewNote(id) {
     S.sketchViewBoard = null;
   }
   const note = await get(`/notes/${id}`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
   const tags = parseTags(note.tags);
   const isSketch = note.type === "sketch";
   const wc = isSketch ? 0 : wordCount(note.content);
@@ -3394,7 +3625,7 @@ async function viewNote(id) {
           ? `<div class="note-sketch-body" id="note-sketch-view"></div>`
           : note.type === "quick"
             ? `<div class="note-quick-body ${note.handwritten ? "handwritten-text" : ""}">${esc(note.content).replace(/\n/g, "<br>")}</div>`
-            : `<div class="md ${note.handwritten ? "handwritten-text" : ""}" id="note-view-body">${renderRichContent(note.content)}</div>`
+            : `<div class="md markdown-body ${note.handwritten ? "handwritten-text" : ""}" id="note-view-body">${renderRichContent(note.content)}</div>`
       }
 
       ${
@@ -3661,7 +3892,7 @@ async function viewNoteEditor(noteId, projectId) {
             onkeydown="onEditorKeyDown(event)">${esc(content)}</textarea>
         </div>
         <div class="editor-pane ${prevPaneHidden ? "hidden" : ""}">
-          <div class="editor-preview md ${note?.handwritten ? "handwritten-text" : ""}" id="et-preview">${renderRichContent(content)}</div>
+          <div class="editor-preview md markdown-body ${note?.handwritten ? "handwritten-text" : ""}" id="et-preview">${renderRichContent(content)}</div>
         </div>
       </div>
 
@@ -4863,7 +5094,7 @@ async function doSearch(q) {
           ${esc(r.org_name)} › ${esc(r.project_name)}
           <span style="float:right;opacity:.6">${fmtDate(r.updated_at)}</span>
         </div>
-        ${r.excerpt ? `<div class="search-result-snip">${esc(r.excerpt)}</div>` : ""}
+        ${r.excerpt ? `<div class="search-result-snip">${esc(stripMdSyntax(r.excerpt))}</div>` : ""}
         ${tags.length ? `<div class="note-tags" style="margin-top:6px">${tagsHtml(tags)}</div>` : ""}
       </a>`;
             })
@@ -5159,10 +5390,15 @@ async function toggleNoteLabel(noteId, labelId, isOn, rowEl) {
 }
 
 // ─── Ideas tab ────────────────────────────────────────────────────────────────
+let _ideasProjId = null;
 async function renderIdeasTab(projectId) {
+  const myToken = _navToken;
+  const sameProject = _ideasProjId === projectId && document.getElementById("ideas-list");
   const el = document.getElementById("tab-content");
-  el.innerHTML = loading();
+  if (!sameProject) el.innerHTML = loading();
+  _ideasProjId = projectId;
   const ideas = await get(`/ideas?project_id=${projectId}`);
+  if (myToken !== _navToken) return; // a newer navigation started meanwhile
   el.innerHTML = buildIdeasHTML(ideas, projectId);
 }
 
@@ -5315,12 +5551,23 @@ function renderBootError(err) {
     </div>`;
 }
 
+function _setGhMarkdownTheme(theme) {
+  const link = document.getElementById("gh-markdown-css");
+  if (!link) return;
+  link.href = `https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown-${theme === "light" ? "light" : "dark"}.min.css`;
+}
+
 async function boot() {
   // Apply persisted theme & accent before any content renders
   const _savedTheme = localStorage.getItem("logbook_theme") || "dark";
   const _savedAccent = localStorage.getItem("logbook_accent");
+  const _savedFontSize = localStorage.getItem("logbook_font_size");
+  const _savedFontFamily = localStorage.getItem("logbook_font_family");
   if (_savedTheme === "light") document.body.classList.add("light");
+  _setGhMarkdownTheme(_savedTheme);
   if (_savedAccent) _applyAccentVars(_savedAccent);
+  if (_savedFontSize) _applyFontSizeVar(_savedFontSize);
+  if (_savedFontFamily) _applyFontFamilyVar(_savedFontFamily);
   _restoreSidebarState();
 
   if (typeof marked !== "undefined" && typeof marked.use === "function") {
@@ -5346,6 +5593,8 @@ async function boot() {
 
   setupSearch();
   refreshReminderBadge();
+
+  document.addEventListener("fullscreenchange", _syncFullscreenButton);
 
   window.addEventListener("hashchange", route);
   await route();
