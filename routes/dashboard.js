@@ -1,20 +1,29 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
+const cache = require("../lib/cache");
 
 router.get("/", async (req, res, next) => {
   try {
-    // Run all independent queries in parallel
-    const [
-      stats,
-      projects,
-      recentNotes,
-      topLabels,
-      overdueTodos,
-      notesPerDay,
-      topProjectsByNotes,
-    ] = await Promise.all([
-      db.one(`
+    const payload = await cache.cached("dashboard", 30, () => buildDashboard());
+    res.json(payload);
+  } catch (e) {
+    next(e);
+  }
+});
+
+async function buildDashboard() {
+  // Run all independent queries in parallel
+  const [
+    stats,
+    projects,
+    recentNotes,
+    topLabels,
+    overdueTodos,
+    notesPerDay,
+    topProjectsByNotes,
+  ] = await Promise.all([
+    db.one(`
           SELECT
             (SELECT COUNT(*) FROM organizations)                                  AS org_count,
             (SELECT COUNT(*) FROM projects)                                       AS project_count,
@@ -30,7 +39,7 @@ router.get("/", async (req, res, next) => {
                AND updated_at >= NOW() - INTERVAL '7 days')                      AS todos_done_this_week,
             (SELECT COUNT(*) FROM ideas)                                          AS ideas_count
         `),
-      db.q(`
+    db.q(`
           SELECT
             p.id, p.name, p.status, p.updated_at, p.description,
             o.id AS org_id, o.name AS org_name, o.color AS org_color,
@@ -53,7 +62,7 @@ router.get("/", async (req, res, next) => {
           ORDER BY p.updated_at DESC
           LIMIT 12
         `),
-      db.q(`
+    db.q(`
           SELECT n.id, n.title, n.tags, n.type, n.updated_at,
             LEFT(n.content, 120) AS excerpt,
             p.id AS project_id, p.name AS project_name,
@@ -63,13 +72,13 @@ router.get("/", async (req, res, next) => {
           JOIN organizations o ON o.id = p.org_id
           ORDER BY n.updated_at DESC LIMIT 8
         `),
-      db.q(`
+    db.q(`
           SELECT l.id, l.name, l.color, COUNT(nl.note_id) AS usage
           FROM labels l
           JOIN note_labels nl ON nl.label_id = l.id
           GROUP BY l.id ORDER BY usage DESC LIMIT 8
         `),
-      db.q(`
+    db.q(`
           SELECT t.id, t.title, t.priority, t.due_date,
             p.id AS project_id, p.name AS project_name
           FROM todos t JOIN projects p ON p.id = t.project_id
@@ -77,13 +86,13 @@ router.get("/", async (req, res, next) => {
             AND t.due_date IS NOT NULL AND t.due_date < CURRENT_DATE
           ORDER BY t.due_date ASC LIMIT 5
         `),
-      db.q(`
+    db.q(`
           SELECT DATE(created_at)::text AS day, COUNT(*)::int AS count
           FROM notes
           WHERE created_at >= NOW() - INTERVAL '7 days'
           GROUP BY day ORDER BY day
         `),
-      db.q(`
+    db.q(`
           SELECT p.name, COUNT(n.id)::int AS note_count, o.color AS org_color
           FROM projects p
           JOIN organizations o ON o.id = p.org_id
@@ -91,38 +100,35 @@ router.get("/", async (req, res, next) => {
           GROUP BY p.id, p.name, o.color
           ORDER BY note_count DESC LIMIT 6
         `),
-    ]);
+  ]);
 
-    // Attach labels to recent notes (depends on recentNotes result)
-    if (recentNotes.length) {
-      const ids = recentNotes.map((r) => r.id);
-      const lblRows = await db.q(
-        `SELECT nl.note_id, l.id, l.name, l.color
+  // Attach labels to recent notes (depends on recentNotes result)
+  if (recentNotes.length) {
+    const ids = recentNotes.map((r) => r.id);
+    const lblRows = await db.q(
+      `SELECT nl.note_id, l.id, l.name, l.color
          FROM note_labels nl JOIN labels l ON l.id = nl.label_id
          WHERE nl.note_id = ANY($1::int[])`,
-        [ids],
-      );
-      const byNote = {};
-      lblRows.forEach((l) => {
-        (byNote[l.note_id] = byNote[l.note_id] || []).push(l);
-      });
-      recentNotes.forEach((n) => {
-        n.labels = byNote[n.id] || [];
-      });
-    }
-
-    res.json({
-      stats,
-      projects,
-      recentNotes,
-      topLabels,
-      overdueTodos,
-      notesPerDay,
-      topProjectsByNotes,
+      [ids],
+    );
+    const byNote = {};
+    lblRows.forEach((l) => {
+      (byNote[l.note_id] = byNote[l.note_id] || []).push(l);
     });
-  } catch (e) {
-    next(e);
+    recentNotes.forEach((n) => {
+      n.labels = byNote[n.id] || [];
+    });
   }
-});
+
+  return {
+    stats,
+    projects,
+    recentNotes,
+    topLabels,
+    overdueTodos,
+    notesPerDay,
+    topProjectsByNotes,
+  };
+}
 
 module.exports = router;

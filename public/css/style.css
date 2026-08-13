@@ -25,6 +25,11 @@
   --app-font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --app-font-scale: 1;
+  --md-h1-color: #1971c2;
+  --md-h2-color: #2f9e44;
+  --md-h3-color: #f08c00;
+  --md-bold-color: #e03131;
+  --md-italic-color: #9c36b5;
 }
 
 /* ── Light theme ──────────────────────────────────────────────────────────── */
@@ -68,7 +73,28 @@ body {
   overflow: hidden;
   font-size: 14px;
   line-height: 1.5;
+}
+
+/* Font Size setting only scales markdown content (rendered + raw editing),
+   not the whole app UI (sidebar, buttons, nav, etc). */
+.markdown-body,
+.editor-textarea,
+.story-editor {
   zoom: var(--app-font-scale);
+}
+
+/* github-markdown-css hardcodes background/color/font-family/font-size/
+   line-height directly on .markdown-body at the same specificity as our own
+   rules, and it loads after this stylesheet — so it silently won every one
+   of those properties, including breaking the Font Style setting on all
+   rendered markdown. Doubling the class reclaims the cascade regardless of
+   load order. */
+.markdown-body.markdown-body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--app-font-family);
+  font-size: 14px;
+  line-height: 1.6;
 }
 a {
   color: inherit;
@@ -1150,31 +1176,27 @@ button {
   font-size: 1.15em;
 }
 
-.tb-color-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 2px;
-}
-.rich-color-swatch {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  cursor: pointer;
-  padding: 0;
-  transition: var(--transition);
-}
-.rich-color-swatch:hover {
-  transform: scale(1.15);
-}
-
 .handwritten-toggle-btn {
   white-space: nowrap;
 }
 .handwritten-toggle-btn.on {
   background: var(--accent-dark);
   color: #fff;
+}
+
+.voice-toggle-btn.on {
+  background: var(--danger);
+  color: #fff;
+  animation: voice-pulse 1.6s ease-in-out infinite;
+}
+@keyframes voice-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(248, 113, 113, 0);
+  }
 }
 
 .rich-mini-toolbar {
@@ -1593,6 +1615,26 @@ div.note-item {
   border-bottom: 1px solid var(--border-soft);
   margin-bottom: 0;
 }
+
+.editor-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  margin-top: 16px;
+}
+.editor-sticky-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 20px 28px 0;
+}
+@media (max-width: 820px) {
+  .editor-sticky-head {
+    padding: 16px 18px 0;
+  }
+}
 .editor-title {
   width: 100%;
   background: none;
@@ -1901,14 +1943,23 @@ div.note-item {
   text-overflow: ellipsis;
 }
 
-/* Editor toolbar (legacy flat, kept for reference) */
+/* Editor toolbar */
 .editor-toolbar {
   display: flex;
   align-items: center;
-  gap: 1px;
-  padding: 7px 0;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  margin-top: 14px;
+  border-top: 1px solid var(--border-soft);
   border-bottom: 1px solid var(--border-soft);
   flex-wrap: wrap;
+}
+.tb-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1px;
 }
 .tb-btn {
   display: flex;
@@ -1917,7 +1968,7 @@ div.note-item {
   padding: 5px 8px;
   background: none;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   color: var(--text-muted);
   font-size: 12.5px;
@@ -1925,6 +1976,13 @@ div.note-item {
   min-width: 28px;
   height: 28px;
   transition: var(--transition);
+}
+.tb-btn svg {
+  display: block;
+}
+.tb-btn-text {
+  font-size: 11px;
+  font-weight: 700;
 }
 .tb-btn:hover {
   background: var(--bg-elevated);
@@ -1974,27 +2032,40 @@ div.note-item {
   margin-left: auto;
   display: flex;
   gap: 3px;
+  padding: 2px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 .tb-view-btn {
-  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
+  padding: 0;
   background: none;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   color: var(--text-muted);
-  font-size: 12px;
   font-family: inherit;
   transition: var(--transition);
 }
-.tb-view-btn.on {
-  background: var(--accent-dark);
-  border-color: var(--accent-dark);
-  color: #fff;
+.tb-view-btn:hover {
+  color: var(--text);
+}
+.tb-view-btn.on,
+.tb-view-btn.active {
+  background: var(--bg-surface);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 /* Editor panes */
 .editor-panes {
   margin-top: 4px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   display: flex;
   flex-direction: row;
   gap: 20px;
@@ -2036,7 +2107,7 @@ div.note-item {
   font-size: 15.5px;
   line-height: 1.85;
   color: var(--text);
-  padding: 28px 4px;
+  padding: 24px 28px 40px;
   tab-size: 4;
   overflow: hidden; /* grows with content */
   box-sizing: border-box;
@@ -2048,6 +2119,18 @@ div.note-item {
 }
 .editor-textarea:focus {
   outline: none;
+}
+
+.editor-preview {
+  padding: 24px 28px 40px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+/* ID beats the .markdown-body.markdown-body background rule above — this
+   pane sits inside the .editor-card, so it should match that card's
+   surface background rather than the page's flat background. */
+#et-preview {
+  background: var(--bg-surface);
 }
 
 /* ── Empty states ────────────────────────────────────────────────────────── */
@@ -2731,6 +2814,17 @@ hr.divider {
   overflow: hidden;
 }
 
+/* Full view (?view=full): only the editable content should fill the page —
+   no breadcrumb/project header, tabs, or page list. */
+#app.full-view .page-header,
+#app.full-view .project-tabs,
+#app.full-view .story-nav {
+  display: none;
+}
+#app.full-view .story-layout {
+  height: 100vh;
+}
+
 /* Left page-list nav */
 .story-nav {
   width: 220px;
@@ -2833,6 +2927,24 @@ hr.divider {
 }
 
 /* Page view */
+/* Keeps the Updated/On this page/Edit/Delete row and the page title
+   reachable while scrolling a long page — same .story-content padding
+   compensation as .story-editor-sticky-head (see the comment there). */
+.story-view-sticky-head {
+  position: sticky;
+  top: -36px;
+  z-index: 5;
+  background: var(--bg);
+  margin: 0 -52px;
+  padding: 14px 52px 0;
+}
+@media (max-width: 900px) {
+  .story-view-sticky-head {
+    top: -24px;
+    margin: 0 -24px;
+    padding: 14px 24px 0;
+  }
+}
 .story-page-meta {
   display: flex;
   align-items: center;
@@ -2894,6 +3006,7 @@ hr.divider {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 6px;
+  flex-shrink: 0;
 }
 .story-toc-label {
   font-size: 10px;
@@ -2943,6 +3056,7 @@ hr.divider {
   text-decoration: none;
   line-height: 1.5;
   display: block;
+  flex-shrink: 0;
   transition: color var(--transition);
   padding: 1px 0;
   overflow: hidden;
@@ -2978,10 +3092,36 @@ hr.divider {
   pointer-events: auto;
 }
 
-/* Rendered markdown */
-.story-rendered {
+/* Rendered markdown — predefined heading/emphasis colors, applied wherever
+   markdown is rendered (notes, todos, reminders, story) since they all share
+   the .markdown-body class. */
+.markdown-body h1 {
+  color: var(--md-h1-color);
+}
+.markdown-body h2 {
+  color: var(--md-h2-color);
+}
+.markdown-body h3 {
+  color: var(--md-h3-color);
+}
+.markdown-body strong,
+.markdown-body b {
+  color: var(--md-bold-color);
+}
+.markdown-body em,
+.markdown-body i {
+  color: var(--md-italic-color);
+}
+
+/* #story-rendered (an ID, so it reliably beats the doubled-class rule
+   above too) gives the published page its own card: surface background,
+   generous padding, and rounded corners, instead of sitting flush against
+   the page edges. */
+#story-rendered {
+  background: var(--bg-surface);
+  padding: 32px 40px;
+  border-radius: var(--radius-lg);
   line-height: 1.8;
-  color: var(--text);
   font-size: 15px;
 }
 .story-rendered h1 {
@@ -3080,6 +3220,33 @@ hr.divider {
 }
 
 /* Editor */
+/* .story-content (the scrolling ancestor) has its own top padding; sticky
+   offsets are measured from its padding edge, not its border edge, so
+   without a negative offset here a 36px band of scrolled-past content would
+   stay visible, unclipped, above the sticky bar. Matching top:-36px pulls
+   the sticky bar flush with .story-content's actual top edge instead. */
+.story-editor-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+}
+.story-editor-sticky-head {
+  position: sticky;
+  /* .story-content (the scrolling ancestor) has its own top padding; this
+     offset is unrelated to the card above and still compensates for that —
+     see the .story-content comment near its padding declaration. */
+  top: -36px;
+  z-index: 5;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 20px 28px 0;
+}
+@media (max-width: 900px) {
+  .story-editor-sticky-head {
+    top: -24px;
+    padding: 16px 20px 0;
+  }
+}
 .story-editor-topbar {
   display: flex;
   align-items: center;
@@ -3118,18 +3285,17 @@ hr.divider {
 .story-toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   flex-wrap: wrap;
-  gap: 2px;
   padding: 6px 0 8px;
-  border-bottom: 1px solid var(--border-soft);
-  margin-bottom: 12px;
 }
 .story-tb-btn {
   padding: 4px 7px;
   min-width: 28px;
   height: 28px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
   cursor: pointer;
   font-size: 13px;
@@ -3141,6 +3307,13 @@ hr.divider {
     background var(--transition),
     color var(--transition);
   white-space: nowrap;
+}
+.story-tb-btn svg {
+  display: block;
+}
+.story-tb-btn-text {
+  font-size: 11px;
+  font-weight: 700;
 }
 .story-tb-btn:hover {
   background: var(--bg-elevated);
@@ -3168,13 +3341,12 @@ hr.divider {
   font-size: 15.5px;
   line-height: 1.85;
   color: var(--text);
-  padding: 20px 4px;
+  padding: 20px 28px 40px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   tab-size: 4;
   overflow: hidden; /* grows with content */
   box-sizing: border-box;
   caret-color: var(--accent);
-  border-bottom: 1px solid var(--border-soft);
-  margin-bottom: 14px;
 }
 .story-editor::placeholder {
   color: var(--text-dim);
@@ -3183,32 +3355,19 @@ hr.divider {
 .story-editor:focus {
   outline: none;
 }
-.story-tb-img-btn {
-  padding: 4px 10px;
-}
-/* Write / Preview toggle buttons in the story toolbar */
-.story-view-toggle {
-  font-size: 12px;
-  font-weight: 500;
-  padding: 3px 10px;
-  border: 1px solid var(--border-soft) !important;
-  border-radius: 5px;
-  color: var(--text-muted);
-}
-.story-view-toggle.active {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border-color: var(--accent) !important;
-}
 /* Rendered Markdown preview inside the story editor */
 .story-editor-preview {
   min-height: 480px;
-  padding: 16px 20px;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  background: var(--bg);
+  padding: 20px 28px 40px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   overflow-y: auto;
   line-height: 1.7;
+}
+/* ID beats the .markdown-body.markdown-body background rule above — it
+   already sits inside the .story-editor-wrap card, so it just needs to
+   match that card's background rather than carrying its own. */
+#story-editor-preview {
+  background: var(--bg-surface);
 }
 /* Empty state */
 .story-empty {
@@ -4173,6 +4332,32 @@ hr.divider {
   flex-shrink: 0;
   font-family: inherit;
 }
+.telescope-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px 14px 0;
+  border-bottom: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+.tele-tab-btn {
+  padding: 7px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+}
+.tele-tab-btn:hover {
+  color: var(--text);
+}
+.tele-tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
 .telescope-filters {
   display: flex;
   gap: 4px;
@@ -4917,6 +5102,33 @@ hr.divider {
   font-size: 11px;
   color: var(--text-dim);
   flex-wrap: wrap;
+}
+.tele-type-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.tele-badge-note {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.tele-badge-story {
+  background: rgba(47, 158, 68, 0.14);
+  color: var(--md-h2-color);
+}
+.tele-badge-todo {
+  background: rgba(240, 140, 0, 0.14);
+  color: var(--md-h3-color);
+}
+.tele-badge-reminder {
+  background: rgba(156, 54, 181, 0.14);
+  color: var(--md-italic-color);
 }
 
 /* ── Label picker modal rows ────────────────────────────────────────────────── */

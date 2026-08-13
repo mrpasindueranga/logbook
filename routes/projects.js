@@ -2,26 +2,42 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 const { removeMany } = require("../lib/storage");
+const cache = require("../lib/cache");
+
+// Any create/update/delete touching projects, notes (incl. story pages), or
+// their parent org can shift the counts/excerpts these cached views show.
+async function invalidateProjectCaches(projectId, orgId) {
+  await cache.del(
+    `project:${projectId}`,
+    "projects:org:all",
+    orgId ? `projects:org:${orgId}` : null,
+    orgId ? `org:${orgId}` : null,
+    "orgs:list",
+    "dashboard",
+  );
+}
 
 // GET /api/projects?org_id=X
 router.get("/", async (req, res, next) => {
   try {
     const { org_id } = req.query;
-    const rows = org_id
-      ? await db.q(
-          `SELECT p.*, COUNT(n.id) AS note_count, o.name AS org_name
+    const rows = await cache.cached(`projects:org:${org_id || "all"}`, 30, () =>
+      org_id
+        ? db.q(
+            `SELECT p.*, COUNT(n.id) AS note_count, o.name AS org_name
                     FROM projects p
                     LEFT JOIN notes n ON n.project_id = p.id
                     JOIN organizations o ON o.id = p.org_id
                     WHERE p.org_id = $1
                     GROUP BY p.id, o.name ORDER BY p.name ASC`,
-          [org_id],
-        )
-      : await db.q(`SELECT p.*, COUNT(n.id) AS note_count, o.name AS org_name
+            [org_id],
+          )
+        : db.q(`SELECT p.*, COUNT(n.id) AS note_count, o.name AS org_name
                     FROM projects p
                     LEFT JOIN notes n ON n.project_id = p.id
                     JOIN organizations o ON o.id = p.org_id
-                    GROUP BY p.id, o.name ORDER BY p.name ASC`);
+                    GROUP BY p.id, o.name ORDER BY p.name ASC`),
+    );
     res.json(rows);
   } catch (e) {
     next(e);
@@ -31,24 +47,26 @@ router.get("/", async (req, res, next) => {
 // GET /api/projects/:id
 router.get("/:id", async (req, res, next) => {
   try {
-    const project = await db.one(
-      `
-      SELECT p.*, o.name AS org_name, o.id AS org_id, o.color AS org_color
-      FROM projects p JOIN organizations o ON o.id = p.org_id
-      WHERE p.id = $1`,
-      [req.params.id],
-    );
+    const project = await cache.cached(`project:${req.params.id}`, 30, async () => {
+      const p = await db.one(
+        `
+        SELECT p.*, o.name AS org_name, o.id AS org_id, o.color AS org_color
+        FROM projects p JOIN organizations o ON o.id = p.org_id
+        WHERE p.id = $1`,
+        [req.params.id],
+      );
+      if (!p) return null;
+      p.notes = await db.q(
+        `
+        SELECT id, title, tags, pinned, type, created_at, updated_at,
+          LEFT(content, 300) AS excerpt
+        FROM notes WHERE project_id = $1 AND type != 'story'
+        ORDER BY pinned DESC, updated_at DESC`,
+        [req.params.id],
+      );
+      return p;
+    });
     if (!project) return res.status(404).json({ error: "Project not found" });
-
-    project.notes = await db.q(
-      `
-      SELECT id, title, tags, pinned, type, created_at, updated_at,
-        LEFT(content, 300) AS excerpt
-      FROM notes WHERE project_id = $1 AND type != 'story'
-      ORDER BY pinned DESC, updated_at DESC`,
-      [req.params.id],
-    );
-
     res.json(project);
   } catch (e) {
     next(e);
@@ -86,6 +104,7 @@ router.post("/", async (req, res, next) => {
       "INSERT INTO projects (org_id, name, description, status, color, section_id) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
       [org_id, name.trim(), description.trim(), status, color, resolvedSection],
     );
+    await invalidateProjectCaches(p.id, org_id);
     res.status(201).json(p);
   } catch (e) {
     next(e);
@@ -113,6 +132,7 @@ router.put("/:id", async (req, res, next) => {
        WHERE id=$6 RETURNING *`,
       [name, description, status, color, section_id || null, req.params.id],
     );
+    await invalidateProjectCaches(req.params.id, p.org_id);
     res.json(updated);
   } catch (e) {
     next(e);
@@ -122,7 +142,7 @@ router.put("/:id", async (req, res, next) => {
 // DELETE /api/projects/:id
 router.delete("/:id", async (req, res, next) => {
   try {
-    const p = await db.one("SELECT id FROM projects WHERE id = $1", [
+    const p = await db.one("SELECT id, org_id FROM projects WHERE id = $1", [
       req.params.id,
     ]);
     if (!p) return res.status(404).json({ error: "Project not found" });
@@ -133,6 +153,7 @@ router.delete("/:id", async (req, res, next) => {
     );
     await removeMany(attachments.map((a) => a.object_key));
     await db.run("DELETE FROM projects WHERE id = $1", [req.params.id]);
+    await invalidateProjectCaches(p.id, p.org_id);
     res.json({ message: "Deleted" });
   } catch (e) {
     next(e);
@@ -163,6 +184,9 @@ router.post("/:id/story", async (req, res, next) => {
        VALUES ($1, $2, $3, 'story') RETURNING id, title, updated_at`,
       [req.params.id, title.trim() || "Untitled", content],
     );
+    // A new story page shifts note_count on the cached project/org lists.
+    await cache.del(`project:${req.params.id}`, "dashboard");
+    await cache.delPattern("projects:org:*");
     res.status(201).json(row);
   } catch (e) {
     next(e);
@@ -229,6 +253,8 @@ router.delete("/:id/story/:pageId", async (req, res, next) => {
       `DELETE FROM notes WHERE id = $1 AND project_id = $2 AND type = 'story'`,
       [req.params.pageId, req.params.id],
     );
+    await cache.del(`project:${req.params.id}`, "dashboard");
+    await cache.delPattern("projects:org:*");
     res.json({ ok: true });
   } catch (e) {
     next(e);

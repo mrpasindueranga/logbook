@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 const { removeMany } = require("../lib/storage");
+const cache = require("../lib/cache");
 
 // GET /api/organizations
 router.get("/", async (req, res, next) => {
   try {
-    const rows = await db.q(`
+    const rows = await cache.cached("orgs:list", 60, () =>
+      db.q(`
       SELECT o.*,
         COUNT(DISTINCT p.id) AS project_count,
         COUNT(DISTINCT n.id) AS note_count
@@ -15,7 +17,8 @@ router.get("/", async (req, res, next) => {
       LEFT JOIN notes   n ON n.project_id = p.id
       GROUP BY o.id
       ORDER BY o.name ASC
-    `);
+    `),
+    );
     res.json(rows);
   } catch (e) {
     next(e);
@@ -25,24 +28,26 @@ router.get("/", async (req, res, next) => {
 // GET /api/organizations/:id
 router.get("/:id", async (req, res, next) => {
   try {
-    const org = await db.one("SELECT * FROM organizations WHERE id = $1", [
-      req.params.id,
-    ]);
+    const org = await cache.cached(`org:${req.params.id}`, 60, async () => {
+      const o = await db.one("SELECT * FROM organizations WHERE id = $1", [
+        req.params.id,
+      ]);
+      if (!o) return null;
+      o.projects = await db.q(
+        `
+        SELECT p.*, COUNT(n.id) AS note_count, s.name AS section_name
+        FROM projects p
+        LEFT JOIN notes n ON n.project_id = p.id
+        LEFT JOIN sections s ON s.id = p.section_id
+        WHERE p.org_id = $1
+        GROUP BY p.id, s.id
+        ORDER BY s.position ASC NULLS LAST, s.id ASC NULLS LAST, p.name ASC
+      `,
+        [req.params.id],
+      );
+      return o;
+    });
     if (!org) return res.status(404).json({ error: "Organization not found" });
-
-    org.projects = await db.q(
-      `
-      SELECT p.*, COUNT(n.id) AS note_count, s.name AS section_name
-      FROM projects p
-      LEFT JOIN notes n ON n.project_id = p.id
-      LEFT JOIN sections s ON s.id = p.section_id
-      WHERE p.org_id = $1
-      GROUP BY p.id, s.id
-      ORDER BY s.position ASC NULLS LAST, s.id ASC NULLS LAST, p.name ASC
-    `,
-      [req.params.id],
-    );
-
     res.json(org);
   } catch (e) {
     next(e);
@@ -59,6 +64,7 @@ router.post("/", async (req, res, next) => {
       "INSERT INTO organizations (name, description, color) VALUES ($1,$2,$3) RETURNING *",
       [name.trim(), description.trim(), color],
     );
+    await cache.del("orgs:list", "dashboard");
     res.status(201).json(org);
   } catch (e) {
     if (e.code === "23505")
@@ -87,6 +93,7 @@ router.put("/:id", async (req, res, next) => {
        WHERE id=$4 RETURNING *`,
       [name, description, color, req.params.id],
     );
+    await cache.del("orgs:list", `org:${req.params.id}`, "dashboard");
     res.json(updated);
   } catch (e) {
     if (e.code === "23505")
@@ -114,6 +121,7 @@ router.delete("/:id", async (req, res, next) => {
     );
     await removeMany(attachments.map((a) => a.object_key));
     await db.run("DELETE FROM organizations WHERE id = $1", [req.params.id]);
+    await cache.del("orgs:list", `org:${req.params.id}`, "dashboard");
     res.json({ message: "Deleted" });
   } catch (e) {
     next(e);

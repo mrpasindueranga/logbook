@@ -580,6 +580,8 @@ function parseRoute() {
   const p = h.split("/").filter(Boolean);
   if (!p.length) return { v: "dashboard" };
   if (p[0] === "org" && p[1]) return { v: "org", id: +p[1] };
+  if (p[0] === "project" && p[1] && p[2] === "story" && p[3])
+    return { v: "project", id: +p[1], tab: "story", storyPageId: +p[3] };
   if (p[0] === "project" && p[1] && p[2] === "story")
     return { v: "project", id: +p[1], tab: "story" };
   if (p[0] === "project" && p[1] && p[2] === "notes")
@@ -611,6 +613,7 @@ async function route() {
     clearTimeout(_storyAutosaveTimer);
     _storyAutosaveTimer = null;
   }
+  stopAllVoiceTyping();
   const myToken = ++_navToken;
   const r = parseRoute();
   renderSidebar();
@@ -621,7 +624,7 @@ async function route() {
       case "org":
         return await viewOrg(r.id);
       case "project":
-        return await viewProject(r.id, r.tab || "story");
+        return await viewProject(r.id, r.tab || "story", r.storyPageId);
       case "note":
         return await viewNote(r.id);
       case "note-edit":
@@ -1177,7 +1180,7 @@ async function viewOrg(id) {
 }
 
 // ─── Project view ─────────────────────────────────────────────────────────────
-async function viewProject(id, tab = "story") {
+async function viewProject(id, tab = "story", storyPageId) {
   const myToken = _navToken;
   const el = document.getElementById("content");
   // Switching tabs within the project we're already viewing shouldn't blank
@@ -1264,7 +1267,7 @@ async function viewProject(id, tab = "story") {
     </div>
   `;
 
-  if (tab === "story") await renderStoryTab(id, proj);
+  if (tab === "story") await renderStoryTab(id, proj, storyPageId);
   else if (tab === "notes") renderNotesTab(proj);
   else if (tab === "todos") await renderTodosTab(id, proj, todosResult);
   else if (tab === "ideas") await renderIdeasTab(id);
@@ -1277,6 +1280,11 @@ let _storyPages = [];
 let _storyPageId = null;
 let _storyCurrentPage = null;
 let _storyAutosaveTimer = null;
+// Set once in boot() from ?view=full — the "open in new tab" flag that hides
+// app chrome and, for Story, opens straight into the editable view.
+let _fullViewMode = false;
+// ?mode=preview within a full view opens the rendered Story page instead.
+let _fullViewPreviewIntent = false;
 
 // ─── Tab filter / sort state ──────────────────────────────────────────────────────────────────────────────
 let _tabNotes = [],
@@ -1305,12 +1313,12 @@ function _buildStoryTOC(content) {
   return headings;
 }
 
-async function renderStoryTab(projectId) {
+async function renderStoryTab(projectId, proj, requestedPageId) {
   const myToken = _navToken;
   // Revisiting the same project's Story tab: keep whatever's on screen (and
   // which page was open) instead of flashing a spinner and resetting to page 1.
   const sameProject = _storyProjId === projectId && _storyPages.length;
-  const keepPageId = sameProject ? _storyPageId : null;
+  const keepPageId = requestedPageId || (sameProject ? _storyPageId : null);
   const el = document.getElementById("tab-content");
   if (!sameProject) el.innerHTML = loading();
   _storyProjId = projectId;
@@ -1340,7 +1348,8 @@ async function renderStoryTab(projectId) {
   const stillExists =
     keepPageId && _storyPages.some((p) => p.id === keepPageId);
   if (stillExists) {
-    if (!_storyCurrentPage) await _loadStoryPage(keepPageId);
+    if (!_storyCurrentPage || _storyCurrentPage.id !== keepPageId)
+      await _loadStoryPage(keepPageId);
   } else if (_storyPages.length) {
     await _loadStoryPage(_storyPages[0].id);
   } else {
@@ -1384,7 +1393,25 @@ async function _loadStoryPage(pageId) {
   const page = await get(`/projects/${_storyProjId}/story/${pageId}`);
   if (myToken !== _navToken) return; // a newer navigation started meanwhile
   _storyCurrentPage = page;
-  _renderStoryPageView();
+  history.replaceState(
+    null,
+    "",
+    `${location.pathname}${location.search}#/project/${_storyProjId}/story/${pageId}`,
+  );
+  if (_fullViewMode && !_fullViewPreviewIntent) storyStartEdit();
+  else _renderStoryPageView();
+}
+
+function openStoryPageInNewTab(mode) {
+  if (!_storyCurrentPage || !_storyProjId) {
+    toast("Open a page first", "error");
+    return;
+  }
+  const modeParam = mode === "preview" ? "&mode=preview" : "";
+  window.open(
+    `${location.pathname}?view=full${modeParam}#/project/${_storyProjId}/story/${_storyCurrentPage.id}`,
+    "_blank",
+  );
 }
 
 function _renderStoryPageView() {
@@ -1418,15 +1445,18 @@ function _renderStoryPageView() {
   area.innerHTML = `
     <div class="story-page-view${headings.length ? " has-toc" : ""}">
       <div class="story-page-body">
-        <div class="story-page-meta">
-          <span class="story-updated">Updated ${fmtDate(page.updated_at)}</span>
-          <div style="display:flex;gap:6px">
-            ${showTocToggle}
-            <button class="btn btn-secondary btn-sm" onclick="storyStartEdit()">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="storyDeletePage(${page.id})">Delete</button>
+        <div class="story-view-sticky-head">
+          <div class="story-page-meta">
+            <span class="story-updated">Updated ${fmtDate(page.updated_at)}</span>
+            <div style="display:flex;gap:6px">
+              ${showTocToggle}
+              <button class="btn btn-secondary btn-sm" title="Open in new tab" onclick="openStoryPageInNewTab('preview')">↗</button>
+              <button class="btn btn-secondary btn-sm" onclick="storyStartEdit()">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="storyDeletePage(${page.id})">Delete</button>
+            </div>
           </div>
+          <h1 class="story-title-display">${esc(page.title || "Untitled")}</h1>
         </div>
-        <h1 class="story-title-display">${esc(page.title || "Untitled")}</h1>
         <div class="story-rendered markdown-body" id="story-rendered"></div>
       </div>
       ${tocHtml}
@@ -1473,45 +1503,50 @@ function storyStartEdit() {
 
   area.innerHTML = `
     <div class="story-editor-wrap">
-      <div class="story-editor-topbar">
-        <span class="save-status" id="story-save-status"></span>
-        <div class="story-editor-topbar-actions">
-          <button class="btn btn-secondary btn-sm" onclick="_storyCancelEdit()">Cancel</button>
-          <button class="btn btn-primary btn-sm"   onclick="storySavePage()">Save</button>
+      <div class="story-editor-sticky-head">
+        <input id="story-title-input" class="story-title-input"
+               oninput="_storyMarkDirty()"
+               value="${esc(page.title || "")}" placeholder="Page title…">
+        <div class="story-editor-topbar">
+          <span class="save-status" id="story-save-status"></span>
+          <div class="story-editor-topbar-actions">
+            <button class="tb-btn" title="Open in new tab" onclick="openStoryPageInNewTab()">↗</button>
+            <button class="btn btn-secondary btn-sm" onclick="_storyCancelEdit()">Cancel</button>
+            <button class="btn btn-primary btn-sm"   onclick="storySavePage()">Save</button>
+          </div>
         </div>
-      </div>
-      <input id="story-title-input" class="story-title-input"
-             oninput="_storyMarkDirty()"
-             value="${esc(page.title || "")}" placeholder="Page title…">
-      <div class="story-toolbar">
-        <button class="story-tb-btn" title="Bold"          onclick="_storyTbBold()"><b>B</b></button>
-        <button class="story-tb-btn" title="Italic"        onclick="_storyTbItalic()"><i>I</i></button>
-        <button class="story-tb-btn" title="Strikethrough" onclick="_storyTbStrike()"><s>S</s></button>
-        <div class="story-tb-sep"></div>
-        <button class="story-tb-btn" title="Heading 1" onclick="_storyTbH('# ')">H1</button>
-        <button class="story-tb-btn" title="Heading 2" onclick="_storyTbH('## ')">H2</button>
-        <button class="story-tb-btn" title="Heading 3" onclick="_storyTbH('### ')">H3</button>
-        <div class="story-tb-sep"></div>
-        <button class="story-tb-btn" title="Bullet list"   onclick="_storyTbLine('- ')">•</button>
-        <button class="story-tb-btn" title="Numbered list" onclick="_storyTbLine('1. ')">1.</button>
-        <button class="story-tb-btn" title="Blockquote"    onclick="_storyTbLine('> ')">❝</button>
-        <div class="story-tb-sep"></div>
-        <button class="story-tb-btn" title="Inline code"   onclick="_storyTbCode()"><code style="font-size:11px">code</code></button>
-        <button class="story-tb-btn" title="Code block"    onclick="_storyTbCodeBlock()">{ }</button>
-        <button class="story-tb-btn" title="Link"          onclick="_storyTbLink()">🔗</button>
-        <button class="story-tb-btn" title="Divider"       onclick="_storyTbDivider()">—</button>
-        <div class="story-tb-sep"></div>
-        <button class="story-tb-btn story-tb-img-btn" title="Insert image"
-                onclick="document.getElementById('story-img-input').click()">📷 Image</button>
-        <input type="file" id="story-img-input" accept="image/*" style="display:none"
-               onchange="storyUploadImage(this)">
-        <div class="story-tb-sep"></div>
-        ${richToolbarHtml("story-editor", { full: false })}
-        <div style="margin-left:auto;display:flex;gap:4px">
-          <button class="story-tb-btn story-view-toggle active" id="story-write-btn"
-            onclick="storySetEditorView('write')" title="Write Markdown">Write</button>
-          <button class="story-tb-btn story-view-toggle" id="story-preview-btn"
-            onclick="storySetEditorView('preview')" title="Preview rendered">Preview</button>
+        <div class="story-toolbar">
+          <div class="tb-group">
+            <button class="story-tb-btn" title="Bold"          onclick="_storyTbBold()"><b>B</b></button>
+            <button class="story-tb-btn" title="Italic"        onclick="_storyTbItalic()"><i>I</i></button>
+            <button class="story-tb-btn" title="Strikethrough" onclick="_storyTbStrike()"><s>S</s></button>
+            <div class="story-tb-sep"></div>
+            <button class="story-tb-btn story-tb-btn-text" title="Heading 1" onclick="_storyTbH('# ')">H1</button>
+            <button class="story-tb-btn story-tb-btn-text" title="Heading 2" onclick="_storyTbH('## ')">H2</button>
+            <button class="story-tb-btn story-tb-btn-text" title="Heading 3" onclick="_storyTbH('### ')">H3</button>
+            <div class="story-tb-sep"></div>
+            <button class="story-tb-btn" title="Bullet list"   onclick="_storyTbLine('- ')">${TB_ICON.ul}</button>
+            <button class="story-tb-btn" title="Numbered list" onclick="_storyTbLine('1. ')">${TB_ICON.ol}</button>
+            <button class="story-tb-btn" title="Blockquote"    onclick="_storyTbLine('> ')">${TB_ICON.quote}</button>
+            <div class="story-tb-sep"></div>
+            <button class="story-tb-btn" title="Inline code"   onclick="_storyTbCode()">${TB_ICON.codeInline}</button>
+            <button class="story-tb-btn" title="Code block"    onclick="_storyTbCodeBlock()">${TB_ICON.codeBlock}</button>
+            <button class="story-tb-btn" title="Link"          onclick="_storyTbLink()">${TB_ICON.link}</button>
+            <button class="story-tb-btn" title="Divider"       onclick="_storyTbDivider()">${TB_ICON.hr}</button>
+            <div class="story-tb-sep"></div>
+            <button class="story-tb-btn" title="Insert image"
+                    onclick="document.getElementById('story-img-input').click()">${TB_ICON.image}</button>
+            <input type="file" id="story-img-input" accept="image/*" style="display:none"
+                   onchange="storyUploadImage(this)">
+            <div class="story-tb-sep"></div>
+            ${richToolbarHtml("story-editor", { full: false })}
+          </div>
+          <div class="tb-view">
+            <button class="tb-view-btn active" id="story-write-btn"
+              onclick="storySetEditorView('write')" title="Write">${TB_ICON.write}</button>
+            <button class="tb-view-btn" id="story-preview-btn"
+              onclick="storySetEditorView('preview')" title="Preview">${TB_ICON.preview}</button>
+          </div>
         </div>
       </div>
       <textarea id="story-editor" class="story-editor"
@@ -1800,6 +1835,11 @@ async function storyAddPage() {
     content: "",
     updated_at: newPage.updated_at,
   };
+  history.replaceState(
+    null,
+    "",
+    `${location.pathname}${location.search}#/project/${_storyProjId}/story/${newPage.id}`,
+  );
   _renderStoryNav();
   storyStartEdit();
 }
@@ -2846,6 +2886,7 @@ async function viewSettings() {
             <div class="theme-toggle-row">
               ${FONT_SIZES.map((f) => `<button class="theme-btn font-size-btn${currentFontSize === f.id ? " active" : ""}" data-font-size="${f.id}" onclick="applyFontSize('${f.id}')">${f.label}</button>`).join("")}
             </div>
+            <div class="help">Scales note, story, todo and reminder text (write &amp; preview). The rest of the app is unaffected.</div>
           </div>
           <div class="settings-row">
             <label>Font Style</label>
@@ -3828,6 +3869,10 @@ async function viewNoteEditor(noteId, projectId) {
           <button class="type-btn ${S.editType === "descriptive" ? "on" : ""}" onclick="setNoteType('descriptive')">📝 Descriptive</button>
           <button class="type-btn ${S.editType === "sketch" ? "on" : ""}" onclick="setNoteType('sketch')">✏️ Sketch</button>
         </div>
+      </div>
+
+      <div class="editor-card">
+      <div class="editor-sticky-head">
         <input class="editor-title" id="et-title" type="text"
           placeholder="${S.editType === "quick" ? "Title (optional — auto-filled from content)" : "Note title…"}" value="${esc(title)}"
           oninput="markDirty()">
@@ -3848,6 +3893,7 @@ async function viewNoteEditor(noteId, projectId) {
           <span class="editor-wordcount ${isSketch ? "hidden" : ""}" id="editor-wc">${isSketch ? "" : `${wordCount(content).toLocaleString()} words`}</span>
           <div style="display:flex;gap:7px;margin-left:auto">
             <button class="tb-btn ai-grammar-btn" id="grammar-btn" title="AI Grammar Check" onclick="runGrammarCheck()">✦ Grammar</button>
+            <button class="tb-btn" id="open-tab-btn" title="Open in new tab" onclick="openNoteInNewTab()">↗</button>
             <button class="tb-btn" id="focus-btn" title="Focus mode" onclick="toggleFocusMode()">⤢</button>
             <button class="btn btn-secondary btn-sm"
               onclick="cancelEdit(${noteId ?? "null"}, ${projectId})">Cancel</button>
@@ -3855,32 +3901,34 @@ async function viewNoteEditor(noteId, projectId) {
               onclick="saveNote(${noteId ?? "null"}, ${projectId})">Save</button>
           </div>
         </div>
-      </div>
 
-      <div class="editor-toolbar${S.editType === "quick" || isSketch ? " hidden" : ""}">
-        <button class="tb-btn" title="Bold (Ctrl+B)"         onclick="ins('bold')"><b>B</b></button>
-        <button class="tb-btn" title="Italic (Ctrl+I)"       onclick="ins('italic')"><i>I</i></button>
-        <button class="tb-btn" title="Strikethrough"         onclick="ins('strike')"><s>S</s></button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" title="Heading 1"             onclick="ins('h1')">H1</button>
-        <button class="tb-btn" title="Heading 2"             onclick="ins('h2')">H2</button>
-        <button class="tb-btn" title="Heading 3"             onclick="ins('h3')">H3</button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" title="Bullet list"           onclick="ins('ul')">• List</button>
-        <button class="tb-btn" title="Ordered list"          onclick="ins('ol')">1. List</button>
-        <button class="tb-btn" title="Blockquote"            onclick="ins('quote')">❝</button>
-        <div class="tb-sep"></div>
-        <button class="tb-btn" title="Inline code (Ctrl+E)"  onclick="ins('code')">\`code\`</button>
-        <button class="tb-btn" title="Code block"            onclick="ins('codeblock')">{ }</button>
-        <button class="tb-btn" title="Link"                  onclick="ins('link')">🔗</button>
-        <button class="tb-btn" title="Horizontal rule"       onclick="ins('hr')">—</button>
-        <button class="tb-btn" title="Table"                 onclick="ins('table')">⊞</button>
-        <div class="tb-sep"></div>
-        ${richToolbarHtml("note-editor", { full: false })}
-        <div class="tb-view">
-          <button class="tb-view-btn ${S.editorView === "edit" ? "on" : ""}"    onclick="setView('edit')">Edit</button>
-          <button class="tb-view-btn ${S.editorView === "split" ? "on" : ""}"   onclick="setView('split')">Split</button>
-          <button class="tb-view-btn ${S.editorView === "preview" ? "on" : ""}" onclick="setView('preview')">Preview</button>
+        <div class="editor-toolbar${S.editType === "quick" || isSketch ? " hidden" : ""}">
+          <div class="tb-group">
+            <button class="tb-btn" title="Bold (Ctrl+B)"         onclick="ins('bold')"><b>B</b></button>
+            <button class="tb-btn" title="Italic (Ctrl+I)"       onclick="ins('italic')"><i>I</i></button>
+            <button class="tb-btn" title="Strikethrough"         onclick="ins('strike')"><s>S</s></button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn tb-btn-text" title="Heading 1" onclick="ins('h1')">H1</button>
+            <button class="tb-btn tb-btn-text" title="Heading 2" onclick="ins('h2')">H2</button>
+            <button class="tb-btn tb-btn-text" title="Heading 3" onclick="ins('h3')">H3</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" title="Bullet list"           onclick="ins('ul')">${TB_ICON.ul}</button>
+            <button class="tb-btn" title="Ordered list"          onclick="ins('ol')">${TB_ICON.ol}</button>
+            <button class="tb-btn" title="Blockquote"            onclick="ins('quote')">${TB_ICON.quote}</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" title="Inline code (Ctrl+E)"  onclick="ins('code')">${TB_ICON.codeInline}</button>
+            <button class="tb-btn" title="Code block"            onclick="ins('codeblock')">${TB_ICON.codeBlock}</button>
+            <button class="tb-btn" title="Link"                  onclick="ins('link')">${TB_ICON.link}</button>
+            <button class="tb-btn" title="Horizontal rule"       onclick="ins('hr')">${TB_ICON.hr}</button>
+            <button class="tb-btn" title="Table"                 onclick="ins('table')">${TB_ICON.table}</button>
+            <div class="tb-sep"></div>
+            ${richToolbarHtml("note-editor", { full: false })}
+          </div>
+          <div class="tb-view">
+            <button class="tb-view-btn ${S.editorView === "edit" ? "on" : ""}"    title="Write"   onclick="setView('edit')">${TB_ICON.write}</button>
+            <button class="tb-view-btn ${S.editorView === "split" ? "on" : ""}"   title="Split"   onclick="setView('split')">${TB_ICON.split}</button>
+            <button class="tb-view-btn ${S.editorView === "preview" ? "on" : ""}" title="Preview" onclick="setView('preview')">${TB_ICON.preview}</button>
+          </div>
         </div>
       </div>
 
@@ -3897,6 +3945,7 @@ async function viewNoteEditor(noteId, projectId) {
       </div>
 
       <div class="sketch-editor-wrap ${isSketch ? "" : "hidden"}" id="et-sketch"></div>
+      </div><!-- /editor-card -->
 
       <!-- Grammar check results panel (hidden by default) -->
       <div class="grammar-panel hidden" id="grammar-panel">
@@ -4505,6 +4554,15 @@ function updateEditorWordCount() {
   const wc = wordCount(ta.value);
   const rt = readingTime(ta.value);
   el.textContent = `${wc.toLocaleString()} words · ${rt} min`;
+}
+
+function openNoteInNewTab() {
+  const id = editorNoteId();
+  if (!id) {
+    toast("Save the note first", "error");
+    return;
+  }
+  window.open(`${location.pathname}?view=full#/note/${id}`, "_blank");
 }
 
 let _focusMode = false;
@@ -5158,6 +5216,14 @@ let teleTimer = null;
 let teleIndex = -1;
 let teleFilter = "all";
 let teleLabels = [];
+let teleType = "all";
+const TELE_TYPES = [
+  { id: "all", label: "All" },
+  { id: "story", label: "Story" },
+  { id: "notes", label: "Notes" },
+  { id: "todos", label: "Todos" },
+  { id: "reminders", label: "Reminders" },
+];
 
 async function openTelescope() {
   const wrap = document.getElementById("telescope");
@@ -5166,6 +5232,12 @@ async function openTelescope() {
   inp.value = "";
   teleIndex = -1;
   teleFilter = "all";
+  teleType = "all";
+
+  document.getElementById("telescope-tabs").innerHTML = TELE_TYPES.map(
+    (t) =>
+      `<button class="tele-tab-btn${t.id === "all" ? " active" : ""}" data-type="${t.id}" onclick="setTeleType('${t.id}',this)">${t.label}</button>`,
+  ).join("");
 
   // load labels for filters
   try {
@@ -5189,6 +5261,20 @@ async function openTelescope() {
   requestAnimationFrame(() => inp.focus());
 }
 
+function setTeleType(t, el) {
+  teleType = t;
+  document
+    .querySelectorAll(".tele-tab-btn")
+    .forEach((b) => b.classList.remove("active"));
+  el.classList.add("active");
+  const q = document.getElementById("telescope-input").value.trim();
+  if (q || teleFilter !== "all" || teleType !== "all") doTelescopeSearch();
+  else {
+    document.getElementById("telescope-results").innerHTML =
+      '<div class="tele-empty">Type to search your notes</div>';
+  }
+}
+
 function closeTelescope() {
   document.getElementById("telescope").classList.add("hidden");
   clearTimeout(teleTimer);
@@ -5205,7 +5291,7 @@ function setTeleFilter(f, el) {
     .forEach((b) => b.classList.remove("active"));
   el.classList.add("active");
   const q = document.getElementById("telescope-input").value.trim();
-  if (q || f !== "all") doTelescopeSearch();
+  if (q || f !== "all" || teleType !== "all") doTelescopeSearch();
   else {
     document.getElementById("telescope-results").innerHTML =
       '<div class="tele-empty">Type to search your notes</div>';
@@ -5216,7 +5302,7 @@ function onTelescopeInput() {
   clearTimeout(teleTimer);
   teleIndex = -1;
   const q = document.getElementById("telescope-input").value.trim();
-  if (!q && teleFilter === "all") {
+  if (!q && teleFilter === "all" && teleType === "all") {
     document.getElementById("telescope-results").innerHTML =
       '<div class="tele-empty">Type to search your notes</div>';
     return;
@@ -5248,13 +5334,15 @@ function onTelescopeKey(e) {
 async function doTelescopeSearch() {
   const q = document.getElementById("telescope-input").value.trim();
   const isLabelFilter = teleFilter !== "all";
-  if (!q && !isLabelFilter) return;
+  const isTypeFilter = teleType !== "all";
+  if (!q && !isLabelFilter && !isTypeFilter) return;
   const resultsEl = document.getElementById("telescope-results");
   resultsEl.innerHTML = '<div class="tele-empty">Searching…</div>';
   try {
     const labelParam = isLabelFilter ? `&label_id=${teleFilter}` : "";
+    const typeParam = isTypeFilter ? `&type=${teleType}` : "";
     const qParam = q ? `q=${encodeURIComponent(q)}` : "q=";
-    const results = await get(`/search?${qParam}${labelParam}`);
+    const results = await get(`/search?${qParam}${labelParam}${typeParam}`);
     renderTelescopeResults(results, resultsEl);
   } catch {
     resultsEl.innerHTML =
@@ -5262,8 +5350,35 @@ async function doTelescopeSearch() {
   }
 }
 
+const TELE_TYPE_BADGE = {
+  note: { label: "Note", cls: "tele-badge-note" },
+  story: { label: "Story", cls: "tele-badge-story" },
+  todo: { label: "Todo", cls: "tele-badge-todo" },
+  reminder: { label: "Reminder", cls: "tele-badge-reminder" },
+};
+
+let _teleResults = [];
+
+function openTeleResult(i) {
+  const r = _teleResults[i];
+  if (!r) return;
+  closeTelescope();
+  if (r.entity_type === "story") {
+    location.hash = `#/project/${r.project_id}/story/${r.id}`;
+  } else if (r.entity_type === "todo") {
+    location.hash = `#/project/${r.project_id}/todos`;
+    setTimeout(() => openEditTodoModal(r.id), 300);
+  } else if (r.entity_type === "reminder") {
+    location.hash = r.project_id ? `#/project/${r.project_id}/reminders` : "#/reminders";
+    setTimeout(() => openEditReminderModal(r.id), 300);
+  } else {
+    location.hash = `#/note/${r.id}`;
+  }
+}
+
 function renderTelescopeResults(results, el) {
   teleIndex = -1;
+  _teleResults = results;
   if (!results.length) {
     el.innerHTML = '<div class="tele-empty">No results found</div>';
     return;
@@ -5276,11 +5391,15 @@ function renderTelescopeResults(results, el) {
             `<span class="label-pill" style="background:${esc(l.color)}20;color:${esc(l.color)};border-color:${esc(l.color)}40">${esc(l.name)}</span>`,
         )
         .join("");
-      return `<div class="tele-result-item${i === 0 ? " active" : ""}" onclick="closeTelescope();location.hash='#/note/${r.id}'">
-      <div class="tele-result-title">${esc(r.title)}</div>
+      const badge = TELE_TYPE_BADGE[r.entity_type] || TELE_TYPE_BADGE.note;
+      return `<div class="tele-result-item${i === 0 ? " active" : ""}" onclick="openTeleResult(${i})">
+      <div class="tele-result-title">
+        <span class="tele-type-badge ${badge.cls}">${badge.label}</span>
+        ${esc(r.title)}
+      </div>
       <div class="tele-result-meta">
-        <span style="color:${esc(r.org_color)}">●</span>
-        <span>${esc(r.project_name)}</span>
+        ${r.org_color ? `<span style="color:${esc(r.org_color)}">●</span>` : ""}
+        <span>${r.project_name ? esc(r.project_name) : "No project"}</span>
         ${labels}
         <span style="margin-left:auto;color:var(--text-dim)">${fmtDate(r.updated_at)}</span>
       </div>
@@ -5568,7 +5687,19 @@ async function boot() {
   if (_savedAccent) _applyAccentVars(_savedAccent);
   if (_savedFontSize) _applyFontSizeVar(_savedFontSize);
   if (_savedFontFamily) _applyFontFamilyVar(_savedFontFamily);
-  _restoreSidebarState();
+  // "Open in new tab" opens with ?view=full to land on a distraction-free,
+  // chrome-free view of just that note/story page — independent of (and
+  // without touching) the user's persisted sidebar preference for other tabs.
+  // For Story, ?mode=preview opens the rendered page instead of the editor
+  // (the default) — set by which "open in new tab" button was clicked.
+  const _viewParams = new URLSearchParams(location.search);
+  _fullViewMode = _viewParams.get("view") === "full";
+  _fullViewPreviewIntent = _viewParams.get("mode") === "preview";
+  if (_fullViewMode) {
+    document.getElementById("app").classList.add("sidebar-hidden", "full-view");
+  } else {
+    _restoreSidebarState();
+  }
 
   if (typeof marked !== "undefined" && typeof marked.use === "function") {
     marked.use({ breaks: true, gfm: true });

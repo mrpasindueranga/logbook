@@ -3,6 +3,16 @@ const router = express.Router();
 const db = require("../database/db");
 const { log } = require("../lib/logger");
 const { removeMany } = require("../lib/storage");
+const cache = require("../lib/cache");
+
+// A note create/update/delete shifts counts and excerpts across several
+// cached views: this project's notes list, the project/org detail+list
+// views (note_count), and the dashboard aggregates.
+async function invalidateNoteCaches(projectId, orgId) {
+  await cache.delPattern(`notes:project:${projectId}:*`);
+  await cache.del(`project:${projectId}`, orgId ? `org:${orgId}` : null, "orgs:list", "dashboard");
+  await cache.delPattern("projects:org:*");
+}
 
 async function attachLabels(rows) {
   if (!rows.length) return rows.map((r) => ({ ...r, labels: [] }));
@@ -31,19 +41,26 @@ router.get("/", async (req, res, next) => {
     if (!project_id)
       return res.status(400).json({ error: "project_id is required" });
 
-    let sql = `SELECT id, title, tags, pinned, type, created_at, updated_at,
+    const rows = await cache.cached(
+      `notes:project:${project_id}:label:${label_id || "all"}`,
+      20,
+      async () => {
+        let sql = `SELECT id, title, tags, pinned, type, created_at, updated_at,
                  CASE WHEN type = 'sketch' THEN NULL ELSE LEFT(content, 300) END AS excerpt
                FROM notes WHERE project_id = $1`;
-    const params = [project_id];
+        const params = [project_id];
 
-    if (label_id) {
-      params.push(label_id);
-      sql += ` AND id IN (SELECT note_id FROM note_labels WHERE label_id = $${params.length})`;
-    }
-    sql += " ORDER BY pinned DESC, updated_at DESC";
+        if (label_id) {
+          params.push(label_id);
+          sql += ` AND id IN (SELECT note_id FROM note_labels WHERE label_id = $${params.length})`;
+        }
+        sql += " ORDER BY pinned DESC, updated_at DESC";
 
-    const rows = await db.q(sql, params);
-    res.json(await attachLabels(rows));
+        const noteRows = await db.q(sql, params);
+        return attachLabels(noteRows);
+      },
+    );
+    res.json(rows);
   } catch (e) {
     next(e);
   }
@@ -130,6 +147,7 @@ router.post("/", async (req, res, next) => {
       action: "created",
       meta: { type: created.type },
     });
+    await invalidateNoteCaches(project_id, proj?.org_id);
     res.status(201).json(created);
   } catch (e) {
     next(e);
@@ -186,6 +204,7 @@ router.put("/:id", async (req, res, next) => {
       action: "updated",
       meta: changed,
     });
+    await invalidateNoteCaches(note.project_id, proj?.org_id);
     res.json(updated);
   } catch (e) {
     next(e);
@@ -217,6 +236,7 @@ router.delete("/:id", async (req, res, next) => {
       org_id: proj?.org_id,
       action: "deleted",
     });
+    await invalidateNoteCaches(note.project_id, proj?.org_id);
     res.json({ message: "Deleted" });
   } catch (e) {
     next(e);
@@ -235,6 +255,8 @@ router.patch("/:id/pin", async (req, res, next) => {
       "UPDATE notes SET pinned=$1, updated_at=NOW() WHERE id=$2 RETURNING *",
       [pinned, req.params.id],
     );
+    await cache.delPattern(`notes:project:${note.project_id}:*`);
+    await cache.del(`project:${note.project_id}`);
     res.json(updated);
   } catch (e) {
     next(e);

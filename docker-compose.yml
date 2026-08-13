@@ -11,13 +11,61 @@ services:
       - "3737:3737"
     environment:
       PORT: 3737
+      # Postgres stays on the host — see README's "Running with Docker" section.
       PG_HOST: host.docker.internal
       PG_PORT: 5432
       PG_DB: logbook
       PG_USER: postgres
       PG_PASSWORD: postgres
-      MINIO_ENDPOINT: http://host.docker.internal:9000
+      MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET: logbook
-      MINIO_PUBLIC_URL: http://host.docker.internal:9000
+      MINIO_PUBLIC_URL: http://minio:9000
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+      - minio
+
+  redis:
+    image: redis:7-alpine
+    container_name: logbook-redis
+    hostname: redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: logbook-minio
+    hostname: minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ${MINIO_DATA_DIR:-./data/minio}:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  nginx:
+    image: nginx:alpine
+    container_name: logbook-nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+
+volumes:
+  redis-data:
